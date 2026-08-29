@@ -44,6 +44,17 @@ Cloudkeel-DD →](https://cloudkeel.io/quickstart)**
 
 Full documentation: **[cloudkeel.io/docs](https://cloudkeel.io/docs)**
 
+> **A note on two version numbers you may see elsewhere:**
+> - **`0.3.0` installs but will not run.** Its chart is still published, but the
+>   images it points at were removed from Docker Hub after `0.3.1` shipped, so
+>   every pod hits `ImagePullBackOff`. This is permanent — use `0.3.2` or later.
+> - **`0.3.3` was never published.** It exists in the chart's git history but
+>   was skipped before release; `helm show chart --version 0.3.3` fails with no
+>   such tag on the registry. There's no fix pending — just use `0.3.4` or
+>   later.
+>
+> See [Releases](../../releases) for every version that's actually installable.
+
 ## What it checks today
 
 - **Real-cloud drift-proven** (injected into a live account and detected
