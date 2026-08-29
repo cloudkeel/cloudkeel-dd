@@ -44,6 +44,11 @@ Cloudkeel-DD →](https://cloudkeel.io/quickstart)**
 
 Full documentation: **[cloudkeel.io/docs](https://cloudkeel.io/docs)**
 
+Want to see every configurable option before you run the command above?
+**[values.yaml](values.yaml)** in this repo is the exact default values file
+from the published chart — pulled straight from the registry, not
+hand-written, so it can't drift from what actually installs.
+
 > **A note on two version numbers you may see elsewhere:**
 > - **`0.3.0` installs but will not run.** Its chart is still published, but the
 >   images it points at were removed from Docker Hub after `0.3.1` shipped, so

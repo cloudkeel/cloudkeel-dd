@@ -1,0 +1,247 @@
+# This is the exact default values.yaml from the published Cloudkeel-DD chart,
+# version 0.3.6 (oci://registry-1.docker.io/driftdetective/d-detective).
+# Pulled directly from the registry with:
+#   helm show values oci://registry-1.docker.io/driftdetective/d-detective --version 0.3.6
+#
+# It's here for reference so you can see every configurable value before you
+# install — it is NOT meant to be installed from a local clone of this repo.
+# To customize, save your own overrides file and pass it with `-f`:
+#   helm install dd oci://registry-1.docker.io/driftdetective/d-detective \
+#     --version 0.3.6 -f my-values.yaml ...
+#
+# Full walkthrough of the required secrets block: README.md, or
+# https://cloudkeel.io/docs/configuration/helm-values
+#
+# Cloudkeel-DD Helm values. See README.md for a full walkthrough - especially
+# the REQUIRED secrets block below (the app refuses to start without a valid
+# Fernet key, and that key must never change after first install or stored
+# cloud credentials become undecryptable).
+
+nameOverride: ""
+fullnameOverride: ""
+
+images:
+  backend:
+    repository: driftdetective/ddetective-backend
+    tag: ""            # defaults to .Chart.AppVersion when empty
+    pullPolicy: IfNotPresent
+  frontend:
+    repository: driftdetective/ddetective-frontend
+    tag: ""            # defaults to .Chart.AppVersion when empty
+    pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+# ---- REQUIRED secrets ----------------------------------------------------
+# Provide these directly here (rendered into a Secret), OR set
+# secrets.existingSecret to the name of a Secret you manage yourself that
+# carries the same keys. Generate values:
+#   fernetKey:  python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+#   jwtSecret:  openssl rand -base64 48
+secrets:
+  existingSecret: ""          # if set, the five keys below are ignored
+  fernetKey: ""               # CREDENTIALS_ENCRYPTION_KEY (the KEK) - REQUIRED, immutable after first install
+  dataKeyWrapped: ""          # CREDENTIALS_DATA_KEY_WRAPPED (the wrapped DEK) - REQUIRED. Fresh install:
+                               # see docs/CREDENTIAL_ROTATION.md's "Fresh install" section. Upgrading a
+                               # pre-P6 install: the migration Job prints this value on its first run
+                               # against an existing database - capture it from the Job's own logs.
+  jwtSecret: ""               # JWT_SECRET_KEY - REQUIRED (min 32 chars)
+  readOnlyDbPassword: ""      # postgresql.readOnlyRole password - OPTIONAL; empty leaves the role NOLOGIN
+  # Optional global remediation / connector credentials (leave blank to disable):
+  githubPat: ""               # GITHUB_PAT
+  gitlabPat: ""               # GITLAB_PAT
+  argocdToken: ""             # ARGOCD_TOKEN
+  # LICENSE_KEY - OPTIONAL. Without one the install runs on the pilot timer and
+  # then the Free allowance; it never stops working (BACKLOG #100).
+  #
+  # IN THE SECRET, unlike licenseExpiresAt below, and the difference is real. The
+  # expiry is a date - not secret, and putting it here would imply a protection
+  # it does not have. A key is a BEARER token: it is signed rather than
+  # encrypted, so reading it reveals nothing, but HOLDING it grants the tier it
+  # names on any install it is pasted into. That is worth Secret-level handling
+  # even though it is not a confidentiality secret.
+  #
+  # A key set here WINS over one entered in Settings, so `helm upgrade` is always
+  # authoritative and never loses silently to a database row. The Settings field
+  # closes itself and says so when this is set.
+  licenseKey: ""              # LICENSE_KEY
+
+# ---- Plain config (rendered into a ConfigMap) ----------------------------
+config:
+  environment: production
+  logLevel: info
+  jwtAccessTokenExpireMinutes: 30
+  rateLimitEnabled: true
+  argocdServer: argocd.example.com
+  argocdInsecure: true
+  gitlabUrl: https://gitlab.com
+  # CORS: same-origin single-Ingress deployments need only the ingress host.
+  # Leave empty to auto-derive https://<ingress.host> ; override if needed.
+  corsOrigins: ""
+
+  # ---- Pilot timer -------------------------------------------------------
+  # A pilot install runs for licenseTrialDays from the moment the FIRST tenant
+  # is created, then reports itself expired. It is a pilot timer, not a licence
+  # check: nothing phones home, and anyone who can edit this file can change it.
+  # We say so plainly rather than implying an enforcement it does not have.
+  #
+  # licenseExpiresAt, when set, wins over the timer. That is how a pilot is
+  # extended: set it and run `helm upgrade`. The backend, worker and beat pods
+  # all roll automatically, because their checksum/config annotation covers this
+  # ConfigMap - there is no separate restart to remember.
+  #
+  # Format: a full UTC ISO-8601 timestamp ("2026-12-31T23:59:59Z") or a bare
+  # date ("2026-12-31", read as midnight UTC). Anything unparseable is ignored
+  # and the timer applies instead - a typo here must never be able to stop a
+  # customer's scanning.
+  #
+  # Deliberately NOT in the Secret: the expiry is not secret, and putting it
+  # there would imply a protection it does not provide.
+  licenseTrialDays: 30
+  licenseExpiresAt: ""
+
+  # Enforcement is ON from chart 0.3.0. An install stops STARTING new scans once
+  # its window ends.
+  #
+  # It does not lose anything. Findings, history, integrations and login all keep
+  # working, scans already running finish, and nothing is deleted - expiry stops
+  # new work, it does not take away what you have.
+  #
+  # Safe to have on by default only because of the grandfathering added in the
+  # same release: the window anchors on MAX(first tenant, when this install first
+  # ran the enforcing code), so an install that predates enforcement gets a FULL
+  # window from the upgrade rather than being retroactively expired. Without that,
+  # turning this on would have stopped scanning on every long-running install the
+  # moment they upgraded, with no warning period either.
+  #
+  # Set it to false to run the timer in reporting-only mode: state still computed,
+  # logged and shown, nothing blocked.
+  licenseEnforcementEnabled: true
+
+  # Whether ANYONE who can reach the API may create a new workspace.
+  #
+  # Default false, which means POST /api/auth/register works only while this
+  # install has no workspace at all - the person setting it up. Everyone after
+  # them joins by invite, which is what the invite flow already exists for.
+  #
+  # Leaving this open was an oversight rather than a decision: this product is
+  # self-hosted and single-customer, and every registrant becomes a superuser of
+  # the workspace they create. Set it true ONLY if you deliberately want several
+  # independent workspaces in one install, and understand that anyone who can
+  # reach the API can then create one.
+  #
+  # NOT retroactive: an install that already has several workspaces keeps every
+  # one of them. This only refuses NEW ones.
+  allowOpenRegistration: false
+
+# ---- Bundled PostgreSQL (single replica). Disable to use an external DB. --
+postgresql:
+  enabled: true
+  image: postgres:16
+  auth:
+    database: driftdetective
+    username: postgres
+    password: ""              # REQUIRED when enabled (used by the app too)
+  # Self-heal: on every Postgres start, reconcile the role password to the
+  # Secret value (auth.password) over the local trust socket. Makes a rotated
+  # or regenerated password over a surviving PVC a non-event instead of a
+  # silent outage (postgres:16 only honors POSTGRES_PASSWORD on first init).
+  # Bundled Postgres only - external DBs are provider-owned. Set false to opt out.
+  reconcilePassword: true
+  # A READ-ONLY role, reconciled the same idempotent way as the password above.
+  #
+  # Why it exists: verifying drift at field level (docs/DRIFT-PROOF-RUNBOOK.md)
+  # means reading the findings tables, and the only credential that could do
+  # that was the Postgres SUPERUSER. Handing out a write-capable credential to
+  # answer a read-only question is the wrong trade, and it is the one this
+  # chart can actually fix.
+  #
+  # Grants CONNECT + USAGE + SELECT on the app schema, plus ALTER DEFAULT
+  # PRIVILEGES so tables added by a later migration are covered without anyone
+  # re-running a grant. NOLOGIN until a password is supplied.
+  #
+  # NOTE this does NOT by itself make the DB reachable from outside the
+  # cluster: postgres is a ClusterIP service, so a reader still needs a network
+  # path (port-forward, or a query run inside the cluster). See the runbook's
+  # section 2 - reachability and authorization are separate problems and only
+  # the second is solved here.
+  readOnlyRole:
+    enabled: true
+    username: ddetective_readonly
+    # Supply via secrets.readOnlyDbPassword (ADO variable group
+    # ddetective-app-secrets). Empty = role is created NOLOGIN and cannot
+    # connect, which is the safe default for a chart that ships publicly.
+  persistence:
+    enabled: true
+    size: 8Gi
+    storageClass: ""
+  resources: {}
+
+# ---- Bundled Redis (single replica, no persistence). Disable for external. -
+redis:
+  enabled: true
+  image: redis:7
+  resources: {}
+
+# ---- External datastore overrides (used when the bundled ones are disabled) -
+externalDatabase:
+  host: ""
+  port: 5432
+  name: driftdetective
+  user: postgres
+  password: ""
+externalRedis:
+  host: ""
+  port: 6379
+  password: ""
+
+# ---- OPA policy sidecar (internal only) ----------------------------------
+opa:
+  image: openpolicyagent/opa:1.18.2
+  resources: {}
+
+# ---- Application components -----------------------------------------------
+backend:
+  replicaCount: 1
+  resources: {}
+worker:
+  replicaCount: 1
+  resources: {}
+# beat is intentionally always single-replica (a second scheduler would double
+# every periodic task) - not configurable.
+beat:
+  resources: {}
+frontend:
+  replicaCount: 1
+  resources: {}
+  service:
+    # ClusterIP (default) is reached via `kubectl port-forward` - the
+    # zero-setup path to a working app (see ingress.enabled below). Set to
+    # LoadBalancer or NodePort for external access without an Ingress
+    # controller.
+    type: ClusterIP
+
+# ---- Ingress: OPTIONAL (P5). The frontend's own runtime API proxy
+# (middleware.ts, wired via BACKEND_ORIGIN on the frontend Deployment) makes
+# the app fully working without any Ingress - `helm install` then
+# `kubectl port-forward svc/<release>-frontend 3000:3000` is enough, no
+# controller, no DNS, no Host header. Enable this for a stable production
+# hostname/TLS: one host routes / to the frontend and /api,/health,/docs
+# directly to the backend. ------------------------------------------------
+ingress:
+  enabled: false
+  className: ""
+  host: d-detective.example.com
+  annotations: {}
+  tls:
+    enabled: false
+    secretName: ""
+
+serviceAccount:
+  create: true
+  name: ""
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 10001
+
