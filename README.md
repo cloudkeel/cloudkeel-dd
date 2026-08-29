@@ -53,7 +53,10 @@ helm install dd oci://registry-1.docker.io/driftdetective/d-detective --version 
 Full walkthrough, prerequisites, and what to expect at each step: **[Try
 Cloudkeel-DD →](https://cloudkeel.io/quickstart)**
 
-Full documentation: **[cloudkeel.io/docs](https://cloudkeel.io/docs)**
+Full documentation: **[cloudkeel.io/docs](https://cloudkeel.io/docs)** — also
+mirrored in this repo under **[docs/](docs/)** for search visibility. The live
+site updates first; every mirrored page links back to its own canonical
+version.
 
 Want to see every configurable option before you run the command above?
 **[values.yaml](values.yaml)** in this repo is the exact default values file
