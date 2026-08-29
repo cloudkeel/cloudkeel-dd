@@ -97,7 +97,23 @@ what's honestly still a gap: **[Coverage →](https://cloudkeel.io/docs/coverage
 - Runs **unmetered for 30 days**, then converts to a **Free tier** — 1 enabled
   scope, 3 users, every feature, for as long as you want. Findings, history,
   integrations, and login all keep working; nothing is deleted. See
-  **[Pricing →](https://cloudkeel.io/dd#pricing)**.
+  **[Pricing →](https://cloudkeel.io/pricing)**.
+
+## Pricing
+
+One meter: pay per enabled scope (a subscription, account, project, or
+cluster). No per-resource charges, ever.
+
+| | Free | Team | Enterprise |
+|---|---|---|---|
+| **Price** | $0 forever | $79 / scope / mo¹ | from $20K/yr |
+| **Scopes** | 1 | 2–20 | Custom |
+| **Users** | 3 | 25 | Custom |
+| **Features** | All | All | All |
+| **Support** | Docs and community | Email, 2-business-day | Priority, named contact |
+
+¹ Billed annually; $99/scope/mo month-to-month. Team also runs unmetered for
+its first 30 days. Full breakdown and FAQ: **[cloudkeel.io/pricing →](https://cloudkeel.io/pricing)**
 
 ## Need a hand getting set up, not just software?
 
