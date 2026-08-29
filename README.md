@@ -1,3 +1,14 @@
+<p align="center">
+  <img src=".github/assets/banner.svg" alt="Cloudkeel-DD — self-hosted configuration-drift detection for Terraform + Kubernetes" width="100%">
+</p>
+
+<p align="center">
+  <a href="https://github.com/cloudkeel/cloudkeel-dd/releases"><img alt="Latest release" src="https://img.shields.io/github/v/release/cloudkeel/cloudkeel-dd?label=latest&color=2DD4BF&labelColor=0E1420&style=flat-square"></a>
+  <a href="https://cloudkeel.io/docs"><img alt="Docs" src="https://img.shields.io/badge/docs-cloudkeel.io-2DD4BF?labelColor=0E1420&style=flat-square"></a>
+  <img alt="Self-hosted" src="https://img.shields.io/badge/self--hosted-always-2DD4BF?labelColor=0E1420&style=flat-square">
+  <img alt="Read-only" src="https://img.shields.io/badge/read--only-always-2DD4BF?labelColor=0E1420&style=flat-square">
+</p>
+
 # Cloudkeel-DD
 
 **Self-hosted configuration-drift detection for Terraform + Kubernetes teams.**
