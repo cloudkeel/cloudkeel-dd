@@ -36,7 +36,7 @@ FERNET=$(python3 -c "from cryptography.fernet import Fernet; print(Fernet.genera
 DATAKEY=$(python3 -c "from cryptography.fernet import Fernet; print(Fernet(b'$FERNET').encrypt(Fernet.generate_key()).decode())")
 JWT=$(openssl rand -base64 48)
 
-helm install dd oci://registry-1.docker.io/driftdetective/d-detective --version 0.3.6 \
+helm install dd oci://registry-1.docker.io/driftdetective/d-detective --version 0.3.7 \
   --namespace ddetective --create-namespace \
   --set secrets.fernetKey="$FERNET" \
   --set secrets.dataKeyWrapped="$DATAKEY" \

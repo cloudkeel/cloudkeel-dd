@@ -1,13 +1,13 @@
 # This is the exact default values.yaml from the published Cloudkeel-DD chart,
-# version 0.3.6 (oci://registry-1.docker.io/driftdetective/d-detective).
+# version 0.3.7 (oci://registry-1.docker.io/driftdetective/d-detective).
 # Pulled directly from the registry with:
-#   helm show values oci://registry-1.docker.io/driftdetective/d-detective --version 0.3.6
+#   helm show values oci://registry-1.docker.io/driftdetective/d-detective --version 0.3.7
 #
 # It's here for reference so you can see every configurable value before you
 # install — it is NOT meant to be installed from a local clone of this repo.
 # To customize, save your own overrides file and pass it with `-f`:
 #   helm install dd oci://registry-1.docker.io/driftdetective/d-detective \
-#     --version 0.3.6 -f my-values.yaml ...
+#     --version 0.3.7 -f my-values.yaml ...
 #
 # Full walkthrough of the required secrets block: README.md, or
 # https://cloudkeel.io/docs/configuration/helm-values
