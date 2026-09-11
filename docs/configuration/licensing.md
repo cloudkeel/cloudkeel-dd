@@ -10,7 +10,6 @@ description: "How a Cloudkeel-DD licence key is applied - at install time as a H
 > or newer**. On earlier charts an install runs on its pilot window and needs no
 > key at all.
 
-
 A Cloudkeel-DD install does not need a licence key to work. Without one it runs
 its pilot window and then continues within the Free allowance. A key raises the
 limits; it does not switch the product on.
@@ -32,7 +31,7 @@ Pass it as a secret value:
 
 ```bash
 helm upgrade --install dd oci://registry-1.docker.io/driftdetective/d-detective \
-  --version 0.3.6 \
+  --version 0.3.7 \
   --namespace ddetective --create-namespace \
   --set secrets.licenseKey='CKDD1....'
 ```

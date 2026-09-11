@@ -8,14 +8,14 @@ description: "Running Cloudkeel-DD with no internet access: the five images to m
 Cloudkeel-DD needs no internet access to run. We operate no endpoints of our own,
 so there is no telemetry, no analytics and no licence server to punch a hole for.
 The only outbound calls it makes are the read-only ones to the endpoints **you**
-connect — your Terraform state backend, your cloud APIs, your Kubernetes
-clusters — plus any notification webhook or Git host you configure yourself.
+connect: your Terraform state backend, your cloud APIs, your Kubernetes
+clusters, plus any notification webhook or Git host you configure yourself.
 
 What an air-gapped install does need is the container images and the chart,
 mirrored inside your network before you start.
 
 > [!NOTE]
-> **The pilot timer runs offline too — plan for it at install time**
+> **The pilot timer runs offline too: plan for it at install time**
 >
 > From chart `0.3.0` an install scans for 30 days from its first workspace and
 > then stops *starting* new scans. That is a **local date comparison**, not a
@@ -24,9 +24,8 @@ mirrored inside your network before you start.
 >
 > Set `config.licenseExpiresAt` to an agreed date when you install and the window
 > follows it, with no connectivity needed then or later. Either way nothing is
-> deleted when a window closes — findings, history, integrations and login keep
+> deleted when a window closes: findings, history, integrations and login keep
 > working. See [the pilot timer](https://cloudkeel.io/docs/configuration/helm-values/#the-pilot-timer).
-
 
 ## Images to mirror
 
@@ -36,7 +35,7 @@ Five, all pulled at install time.
 |---|---|---|
 | `driftdetective/ddetective-backend` | API, worker, beat, the schema-migration Job, and the wait-for-database init containers | Yes |
 | `driftdetective/ddetective-frontend` | The UI | Yes |
-| `openpolicyagent/opa:1.18.2` | Policy evaluation | Yes — deployed unconditionally |
+| `openpolicyagent/opa:1.18.2` | Policy evaluation | Yes (deployed unconditionally) |
 | `postgres:16` | Bundled database | Only when `postgresql.enabled` (default `true`) |
 | `redis:7` | Bundled broker and rate-limit store | Only when `redis.enabled` (default `true`) |
 
@@ -92,7 +91,7 @@ helm install dd ./d-detective-<version>.tgz -f airgap-values.yaml \
   --namespace ddetective --create-namespace
 ```
 
-The required secrets are unchanged — see [secrets](https://cloudkeel.io/docs/configuration/secrets/).
+The required secrets are unchanged: see [secrets](https://cloudkeel.io/docs/configuration/secrets/).
 The Fernet key is immutable after first install.
 
 ## What still has to be reachable
@@ -100,7 +99,7 @@ The Fernet key is immutable after first install.
 Nothing of ours. But Cloudkeel-DD can only scan what the cluster can reach: your
 Terraform state backend, the cloud API endpoints for each connected credential,
 and the API server of each connected Kubernetes cluster. If a scope is not
-reachable from inside the air gap, it cannot be scanned — that is a network
+reachable from inside the air gap, it cannot be scanned: that is a network
 constraint on your side, not an internet requirement on ours.
 
 ## These docs, offline

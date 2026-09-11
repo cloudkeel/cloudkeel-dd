@@ -12,7 +12,7 @@ at the ingress**, and **secret management**.
 ## Prerequisites
 
 - A Kubernetes cluster (1.24+) and Helm 3.
-- An **ingress controller** (e.g. ingress-nginx) — recommended for production
+- An **ingress controller** (e.g. ingress-nginx): recommended for production
   so users reach the app at a stable, TLS-terminated hostname instead of
   `kubectl port-forward`. Not strictly required: the frontend proxies `/api`
   itself at runtime (`ingress.enabled=false`, the chart default), but a real
@@ -24,7 +24,7 @@ at the ingress**, and **secret management**.
 ## 1. Provide the immutable Fernet key up front
 
 Cloudkeel-DD encrypts stored cloud credentials with a **Fernet key**. It is
-**immutable for the life of the install** — losing or changing it makes every
+**immutable for the life of the install**: losing or changing it makes every
 stored credential undecryptable. Generate it once and keep it in your secret
 manager:
 
@@ -53,7 +53,7 @@ Start points, scale with the number of resources and scan frequency:
 | Component | Requests (start) | Notes |
 |---|---|---|
 | API | 250m / 512Mi | Scales with concurrent UI/API use |
-| Worker | 500m / 1Gi | The heavy component — scans run here; add replicas for more parallel scans |
+| Worker | 500m / 1Gi | The heavy component: scans run here; add replicas for more parallel scans |
 | Beat | 100m / 128Mi | Single scheduler; **do not** run more than one replica |
 | Frontend | 100m / 256Mi | Static/SSR |
 

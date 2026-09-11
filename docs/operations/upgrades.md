@@ -16,7 +16,7 @@ automatically.
    for the database to be reachable.
 3. New API / worker / beat / frontend pods roll out.
 
-The migration Job is deliberately **not** a Helm hook — it's a first-class Job in
+The migration Job is deliberately **not** a Helm hook: it's a first-class Job in
 the release so its status and logs are visible with `kubectl`.
 
 ## Before you upgrade
@@ -24,7 +24,7 @@ the release so its status and logs are visible with `kubectl`.
 - **[Back up PostgreSQL](https://cloudkeel.io/docs/operations/backup-restore/).** Migrations move the schema
   forward; a backup is your rollback path.
 - **Keep the same Fernet key.** Pass the identical
-  [`secrets.fernetKey`](https://cloudkeel.io/docs/configuration/secrets/) — changing it orphans every
+  [`secrets.fernetKey`](https://cloudkeel.io/docs/configuration/secrets/): changing it orphans every
   stored credential.
 - Read the [release notes](https://cloudkeel.io/docs/claims/release-notes/) for your target version.
 
@@ -35,8 +35,8 @@ the release so its status and logs are visible with `kubectl`.
 closes.
 
 **It cannot cut your existing install short.** The window is anchored on
-whichever is later — your first workspace, or the first time this install ran a
-version that enforces the timer — so upgrading a long-running install gives it a
+whichever is later (your first workspace, or the first time this install ran a
+version that enforces the timer), so upgrading a long-running install gives it a
 full window from the upgrade rather than expiring it on the spot.
 
 Nothing is deleted when a window does close: findings, history, connected
@@ -49,7 +49,7 @@ reporting-only.
 ## Pin your tags
 
 Pin `images.backend.tag` and `images.frontend.tag` to explicit versions in
-production. They are **independent** — a backend-only release has no new frontend
+production. They are **independent**: a backend-only release has no new frontend
 image at that version, so tagging both with one value causes an
 `ImagePullBackOff`. Bump only what changed; leave the other pinned.
 

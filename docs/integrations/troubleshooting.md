@@ -98,7 +98,7 @@ in order and the first match wins, so the most actionable blocker is what you se
 | `healthy` | Scanning and producing results | Nothing |
 
 `cross_check_only` is the single most common dead end on a first install. An
-Azure, AWS or GCP credential is a **cross-check helper**, never a scan target —
+Azure, AWS or GCP credential is a **cross-check helper**, never a scan target:
 triggering a scan against one is rejected outright. Drift detection needs a
 Terraform state source or a cluster to scan.
 
@@ -110,7 +110,7 @@ scan can sit non-terminal and block that integration.
 
 This self-heals. A scan that has not reached a terminal state within **one hour**
 is marked failed on the next trigger, with an explanatory error message, and
-scanning resumes. You do not need database access to clear it — but a scan that
+scanning resumes. You do not need database access to clear it, but a scan that
 reaches this state means a worker died, which is worth investigating.
 
 ## A type reports "not verifiable"
@@ -119,14 +119,14 @@ The resource was found, but Cloudkeel-DD could not read its live state, so it is
 tracked as inventory instead of field-diffed. **The usual cause is a credential
 missing that type's read permission, not missing coverage.**
 
-Check that first — the credential files were regenerated on 2026-08-07 and older
+Check that first. The credential files were regenerated on 2026-08-07 and older
 copies grant far less than current coverage needs:
 
 - **AWS.** The policy is now a *managed* policy (it outgrew IAM's 2,048-character
-  inline limit). Re-create and attach it —
+  inline limit). Re-create and attach it:
   [step 2](https://cloudkeel.io/docs/integrations/aws-cross-check/#2-attach-the-read-only-policy).
 - **GCP, raw `.tfstate` only.** Re-apply the custom role with
-  `gcloud iam roles update ... --file gcp-iam-roles.json` —
+  `gcloud iam roles update ... --file gcp-iam-roles.json`:
   [step 3](https://cloudkeel.io/docs/integrations/gcp-cross-check/#3-create-and-bind-the-read-only-custom-role).
   The Terraform Cloud path is unaffected, because it reads through Cloud Asset
   Inventory in bulk.
@@ -138,7 +138,7 @@ so it is worth ruling out the credential before anything else.
 Four AWS types stay partial **even with the current policy**, deliberately:
 `aws_lambda_function`, `aws_cognito_user_pool`, `aws_sfn_state_machine` and
 `aws_cloudwatch_event_rule`. Their read handlers ask for `lambda:GetFunction`,
-`kms:Decrypt` or `iam:PassRole` — code download, data-plane decryption, and role
+`kms:Decrypt` or `iam:PassRole`: code download, data-plane decryption, and role
 delegation. Cloudkeel-DD does not ask for those, so those types field-diff on
 what is readable and report the rest.
 
@@ -149,7 +149,7 @@ genuinely has no field-diff spec. The
 ## GCP: the whole scope returns nothing
 
 The Cloud Asset API must be enabled on the project. If it is not, the failure is
-**scope-level, not per-type** — one missing API means the entire GCP scope
+**scope-level, not per-type**: one missing API means the entire GCP scope
 returns no resources rather than degrading partially. The test-connection button
 exercises exactly this call, so the problem surfaces at connection time rather
 than at first scan.

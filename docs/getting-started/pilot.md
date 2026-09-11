@@ -13,7 +13,7 @@ anything else is linked, not inlined.
 
 Cloudkeel-DD running in your cluster, reading your Terraform state, independently
 verifying it against live Azure, and showing you what drifted, what nobody
-declared, and what violates policy — from **read-only** credentials, without
+declared, and what violates policy, from **read-only** credentials, without
 ever writing to your cloud.
 
 Our own measured run, on a cold single-node AKS cluster, took **15 minutes** from
@@ -27,28 +27,27 @@ on your org's access, not on Cloudkeel-DD.
 > | Phase | Time |
 > |---|---|
 > | `helm install` returns | instant (creates resources, doesn't block) |
-> | Image pull | dominant factor — 273 MB total, scales with your network |
+> | Image pull | dominant factor (273 MB total, scales with your network) |
 > | Migration Job completes | 55s (exact, from the Job's own status) |
 > | All 7 workloads Running | within 90s |
 >
 > On a cluster that already has the images cached, the pull disappears and
 > you're left with roughly the migration time.
 
-
 ## Prerequisites
 
-Get all of these in hand before you start — the cloud credential is the long pole.
+Get all of these in hand before you start; the cloud credential is the long pole.
 
 | You need | Verify it |
 |---|---|
 | A Kubernetes cluster (1.24+) you can create namespaces in | `kubectl auth can-i create namespace` → `yes` |
 | Helm 3 | `helm version --short` → `v3.x` |
-| A Terraform state source — Terraform Cloud/Enterprise **or** raw `.tfstate` in cloud storage | you can reach the TFC UI, or list the state bucket |
-| One **read-only** cloud credential to verify against — the Azure happy path is inlined in [step 4](#4-connect-azure-the-credential-that-does-the-work) | `az account show` → your subscription |
+| A Terraform state source: Terraform Cloud/Enterprise **or** raw `.tfstate` in cloud storage | you can reach the TFC UI, or list the state bucket |
+| One **read-only** cloud credential to verify against; the Azure happy path is inlined in [step 4](#4-connect-azure-the-credential-that-does-the-work) | `az account show` → your subscription |
 
 You do **not** need: a cloud account for Cloudkeel-DD itself, an agent on your
 nodes, an Ingress controller (the frontend proxies `/api` itself), or any change
-to how you run Terraform. The chart and images are public on Docker Hub — no repo
+to how you run Terraform. The chart and images are public on Docker Hub: no repo
 access, no pull secret.
 
 > [!WARNING]
@@ -56,8 +55,7 @@ access, no pull secret.
 >
 > Step 4 creates an Azure service principal, which needs permission to create
 > an app registration and assign a role. In locked-down tenants that can need a
-> ticket — **start that request first**, it's your critical path.
-
+> ticket. **Start that request first**: it's your critical path.
 
 ## 1. Install
 
@@ -71,7 +69,7 @@ FERNET=$(python3 -c "from cryptography.fernet import Fernet; print(Fernet.genera
 DATAKEY=$(python3 -c "from cryptography.fernet import Fernet; print(Fernet(b'$FERNET').encrypt(Fernet.generate_key()).decode())")
 JWT=$(openssl rand -base64 48)
 
-helm install dd oci://registry-1.docker.io/driftdetective/d-detective --version 0.3.6 \
+helm install dd oci://registry-1.docker.io/driftdetective/d-detective --version 0.3.7 \
   --namespace ddetective --create-namespace \
   --set secrets.fernetKey="$FERNET" \
   --set secrets.dataKeyWrapped="$DATAKEY" \
@@ -86,13 +84,12 @@ helm install dd oci://registry-1.docker.io/driftdetective/d-detective --version 
 > is lost or changes, those credentials become undecryptable and every
 > integration must be re-entered. Both must stay identical across upgrades.
 
-
 > [!NOTE]
 > **This install scans for 30 days, then keeps going on the Free limits**
 >
 > From chart `0.3.0`, a self-serve install runs unmetered for **30 days from the
 > moment you create your first workspace**. There is no form, no account and no
-> call to install it — the window is on duration, not on access, and nothing
+> call to install it. The window is on duration, not on access, and nothing
 > phones home to check it.
 >
 > From chart `0.3.4`, what happens next is that the install moves to the **Free
@@ -109,18 +106,16 @@ helm install dd oci://registry-1.docker.io/driftdetective/d-detective --version 
 > *On charts before `0.3.4` the window ending stopped new scans from starting
 > instead.*
 
-
 > [!NOTE]
 > **No Python locally? Generate the secrets with the backend image**
 >
 > Needs Docker running; it pulls a one-off copy of the public image.
 > ```bash
-> IMG=driftdetective/ddetective-backend:0.3.6
+> IMG=driftdetective/ddetective-backend:0.3.7
 > FERNET=$(docker run --rm $IMG python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())")
 > DATAKEY=$(docker run --rm $IMG python -c "from cryptography.fernet import Fernet; print(Fernet(b'$FERNET').encrypt(Fernet.generate_key()).decode())")
 > JWT=$(openssl rand -base64 48)
 > ```
-
 
 **You should see** all seven workloads reach Running within ~90 seconds:
 
@@ -136,7 +131,6 @@ kubectl -n ddetective get pods -w
 > migration fails with `password authentication failed`. For a clean reinstall,
 > delete the PVC too: `kubectl delete pvc data-dd-d-detective-postgres-0 -n ddetective`.
 
-
 Want a stable hostname/TLS for a longer-lived pilot, or a managed database?
 That's the [production installation](https://cloudkeel.io/docs/getting-started/production-install/) path; the default
 here needs neither.
@@ -151,17 +145,17 @@ Open `http://localhost:3000` and choose **Need a tenant? Register**. The first
 account you create owns the workspace.
 
 **You should see** the empty dashboard. There is no seeded demo login in a real
-deployment — that exists only in the local dev stack.
+deployment; that exists only in the local dev stack.
 
 ## 3. Connect Terraform (your desired state)
 
 Cloudkeel-DD needs to know what *should* exist. Point it at Terraform Cloud (the
 default, marked **Recommended**).
 
-1. **Organization slug** — it's in your workspace URL:
+1. **Organization slug**: it's in your workspace URL:
    `https://app.terraform.io/app/`**`<organization>`**`/workspaces/...`
-2. **API token** — Terraform Cloud → **Settings → Tokens** → create a user or
-   team token. Read access is enough; Cloudkeel-DD never queues runs. Copy it —
+2. **API token**: Terraform Cloud → **Settings → Tokens** → create a user or
+   team token. Read access is enough; Cloudkeel-DD never queues runs. Copy it;
    it's shown once.
 
 In Cloudkeel-DD: **Connect → Terraform Cloud**, enter `app.terraform.io`, the org
@@ -177,12 +171,11 @@ a first scan start automatically.
 > [Azure Blob](https://cloudkeel.io/docs/integrations/azure-state/) ·
 > [S3](https://cloudkeel.io/docs/integrations/aws-state/) · [GCS](https://cloudkeel.io/docs/integrations/gcp-state/).
 
-
 ## 4. Connect Azure (the credential that does the work)
 
 At this point Cloudkeel-DD can see what Terraform *claims*. It cannot yet check
 whether reality agrees. The Azure cross-check credential is what makes it do its
-actual job. It's **read-only** — the built-in **Reader** role, nothing custom.
+actual job. It's **read-only**: the built-in **Reader** role, nothing custom.
 
 One command creates the app registration, generates a secret, and assigns Reader.
 The first line fills in your subscription ID so there's nothing to hand-edit:
@@ -192,7 +185,7 @@ SUB=$(az account show --query id -o tsv)
 az ad sp create-for-rbac --name "d-detective" --role Reader --scopes "/subscriptions/$SUB"
 ```
 
-It prints three values — **the password is shown once**:
+It prints three values (**the password is shown once**):
 
 ```json
 { "appId": "...",      // → Client ID
@@ -203,7 +196,7 @@ It prints three values — **the password is shown once**:
 In Cloudkeel-DD: **Settings → Cross-check integrations → Azure**, enter the Tenant
 ID, Client ID, and Client secret, then click **Test connection**. Once the test
 passes, that same button becomes **Save and start scanning** - click it. Scanning
-several subscriptions? Assign Reader at the management-group level instead — see
+several subscriptions? Assign Reader at the management-group level instead. See
 [Azure cross-check setup](https://cloudkeel.io/docs/integrations/azure-cross-check/#2-choose-the-role-assignment-scope).
 
 **You should see** a green connection test.
@@ -215,7 +208,6 @@ several subscriptions? Assign Reader at the management-group level instead — s
 > (security groups) · [GCP cross-check](https://cloudkeel.io/docs/integrations/gcp-cross-check/)
 > (firewall rules). AWS and GCP auto-enable their scope, so you can skip step 5.
 
-
 ## 5. Enable the subscription scope
 
 > [!WARNING]
@@ -223,14 +215,13 @@ several subscriptions? Assign Reader at the management-group level instead — s
 >
 > Azure **discovers** your subscriptions and leaves each one **disabled** until
 > you opt in. A connected credential with no enabled scope runs no verification
-> at all. (AWS and GCP auto-enable from the account/project ID — Azure doesn't.)
-
+> at all. (AWS and GCP auto-enable from the account/project ID; Azure doesn't.)
 
 Open the **Scopes** panel on the Azure integration, click **Discover**, then
 **Enable** the subscription you want scanned.
 
 **You should see** the subscription flip from `discovered` to `enabled`. If a
-scan later shows no cloud drift, re-check this first — see the
+scan later shows no cloud drift, re-check this first: see the
 [don't-skip checklist](https://cloudkeel.io/docs/integrations/troubleshooting/#dont-skip-checklist).
 
 ## 6. Run your first scan
@@ -240,7 +231,7 @@ within a minute or two.
 
 ## 7. Read your first finding
 
-A drift event is not just "something changed" — it's the exact field, scored:
+A drift event is not just "something changed"; it's the exact field, scored:
 
 ```
 ! DRIFT   critical   network-security-group   nsg/web-nsg
@@ -251,29 +242,28 @@ A drift event is not just "something changed" — it's the exact field, scored:
 
 Read it left to right:
 
-- **Severity** (`critical`) — from your per-tenant severity rules. Drift in a dev
+- **Severity** (`critical`): from your per-tenant severity rules. Drift in a dev
   scope can be scored lower than the same change in production.
-- **Category** (`network-security-group`) — the resource type that drifted.
-- **The field diff** — the one property that changed, expected vs. actual, so you
+- **Category** (`network-security-group`): the resource type that drifted.
+- **The field diff**: the one property that changed, expected vs. actual, so you
   know exactly what to fix, not just that the resource is dirty.
 
 Alongside drift, the same scan surfaces **unmanaged resources** (running in Azure,
-in no Terraform state — most teams find something here on the first scan) and
+in no Terraform state; most teams find something here on the first scan) and
 **policy violations** (OPA-evaluated, e.g. open ingress from anywhere).
 
-Then decide, per event: **Accept** (reality is right — update your IaC),
+Then decide, per event: **Accept** (reality is right; update your IaC),
 **Suppress** (known noise; requires a reason, supports an expiry), **Revert plan**
 (a suggested plan to push reality back), or **Create remediation PR** (a real,
 human-approved GitHub/GitLab PR). Accept and revert don't close the event
-immediately — it becomes *awaiting re-scan* and only resolves when a later scan
+immediately; it becomes *awaiting re-scan* and only resolves when a later scan
 confirms the drift is gone.
 
 > [!NOTE]
 > **A clean first scan is a valid result**
 >
-> Zero drift means Terraform and reality genuinely agree — not a failure. See
+> Zero drift means Terraform and reality genuinely agree, not a failure. See
 > [what "no drift" legitimately means](https://cloudkeel.io/docs/integrations/troubleshooting/#what-no-drift-legitimately-means).
-
 
 ## Next steps
 

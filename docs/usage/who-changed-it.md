@@ -72,7 +72,7 @@ documented degraded state, not an error.
   volume the relevant entry can fall outside those pages. The cap bounds the
   worst case rather than letting one noisy resource stall a scan.
 - **AWS retention is 90 days.** `LookupEvents` only returns events inside
-  CloudTrail's own retention window — a ceiling above the 72-hour lookback, not
+  CloudTrail's own retention window, a ceiling above the 72-hour lookback, not
   instead of it.
 - **Best-effort by design.** A missing permission, an event the audit log did
   not retain, or a change made through a path the log does not record leaves
@@ -83,7 +83,6 @@ documented degraded state, not an error.
 >
 > An empty "Changed by" means Cloudkeel-DD could not attribute the change, not
 > that no one made it. Do not read it as evidence of anything.
-
 
 ## Troubleshooting
 

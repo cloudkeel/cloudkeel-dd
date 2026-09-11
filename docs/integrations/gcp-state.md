@@ -69,13 +69,13 @@ the state-diffable types described below.
 Only `google_*` resources are read from state today. Other providers'
 resources in a mixed state file are counted but not persisted.
 
-**Live-diffed from raw state — all 59 GCP types.** GCP has no per-path gap:
+**Live-diffed from raw state: all 59 GCP types.** GCP has no per-path gap:
 every spec'd type is reachable from raw `.tfstate` exactly as it is from a
 Terraform plan, so choosing a state source costs you no GCP coverage. The
 [coverage page](https://cloudkeel.io/docs/claims/coverage/) lists all 59, generated from the
 product's own type registry.
 
 A `google_*` type with no field-diff spec is enumerated for unmanaged detection
-but never field-diffed — it stays inventory-only, labelled with the reason. An
+but never field-diffed; it stays inventory-only, labelled with the reason. An
 unverified field mapping risks confident-looking false drift, which is worse
 than an honest "not yet diffed."

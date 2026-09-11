@@ -47,19 +47,19 @@ gcloud iam service-accounts create ddetective-connector \
 
 ## 3. Create and bind the read-only custom role
 
-Use the exact role definition in [`gcp-iam-roles.json`](https://cloudkeel.io/docs/assets/gcp-iam-roles.json) —
+Use the exact role definition in [`gcp-iam-roles.json`](https://cloudkeel.io/docs/assets/gcp-iam-roles.json),
 65 read-only permissions: Cloud Asset Inventory listing, plus a `.get` for every
 GCP type Cloudkeel-DD field-diffs. Nothing that writes.
 
 > [!WARNING]
-> **Already created this role? It grew from 16 permissions to 63**
+> **Already created this role? It grew from 16 permissions to 65**
 >
 > The role carried `.get` on nine resource kinds while GCP coverage grew to 59
 > types. **Which path you use decides whether that affected you:**
 >
-> - **Terraform Cloud / plan path — unaffected.** It reads through Cloud Asset
+> - **Terraform Cloud / plan path: unaffected.** It reads through Cloud Asset
 >   Inventory in bulk, which `cloudasset.assets.listResource` alone covers.
-> - **Raw `.tfstate` in GCS — affected.** That path reads each resource through
+> - **Raw `.tfstate` in GCS: affected.** That path reads each resource through
 >   its own REST `GET`, so a type whose `.get` is missing came back
 >   *"not verifiable"* instead of field-diffed.
 >
@@ -72,8 +72,7 @@ GCP type Cloudkeel-DD field-diffs. Nothing that writes.
 > ```
 >
 > `.list` alone passes the **Test connection** check and only fails later, during
-> a scan — which is why this went unnoticed for so long.
-
+> a scan, which is why this went unnoticed for so long.
 
 > [!WARNING]
 > **Re-apply again if you created this role before 2026-08-28**
@@ -86,7 +85,6 @@ GCP type Cloudkeel-DD field-diffs. Nothing that writes.
 > `google_compute_subnetwork` field-diffs everywhere else but this one, and
 > fails with a permission-denied error naming the missing action rather than
 > the generic *"not verifiable."*
-
 
 ```bash
 gcloud iam roles create DDetectiveReadOnly \
@@ -167,12 +165,12 @@ discovery step to run, no manual scope setup.
 
 ## What gets verified
 
-**Field-level drift verification — all 59 GCP resource types.** GCP is the only
+**Field-level drift verification: all 59 GCP resource types.** GCP is the only
 cloud with no per-path gap: every spec'd type is cross-checked whether the
 desired state comes from a Terraform plan or from raw `.tfstate` in GCS.
 
 The [coverage page](https://cloudkeel.io/docs/claims/coverage/) lists all 59 with their per-path
-status, generated at build time from the product's own type registry — read the
+status, generated at build time from the product's own type registry; read the
 per-type detail there rather than from a list on this page.
 
 A `google_*` type with no spec is never field-diffed. It is tracked as

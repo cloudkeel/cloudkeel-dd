@@ -66,7 +66,7 @@ groups.
 Only `aws_*` resources are read from state today. Other providers' resources
 in a mixed state file are counted but not persisted.
 
-**Live-diffed from raw state — all 62 AWS types.** The
+**Live-diffed from raw state: all 62 AWS types.** The
 [coverage page](https://cloudkeel.io/docs/claims/coverage/) lists every one of them, generated at
 build time from the product's own type registry.
 
@@ -78,11 +78,10 @@ parent.
 > **This is the path that matters most on AWS**
 >
 > A state source is **dramatically** broader than the Terraform Cloud path, which
-> cross-checks `aws_security_group` and nothing else — 62 types against 1. If AWS
+> cross-checks `aws_security_group` and nothing else: 62 types against 1. If AWS
 > is your centre of gravity, connect a state bucket rather than relying on
 > Terraform Cloud alone. It is the single largest coverage asymmetry in the
 > product.
-
 
 A raw-state resource is live-diffed when it has a spec **and** its ARN maps to a
 Cloud Control type; anything else is tracked as inventory with the reason

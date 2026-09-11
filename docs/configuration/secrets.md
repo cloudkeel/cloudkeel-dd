@@ -17,9 +17,8 @@ database. It is a Fernet key (32-byte urlsafe base64).
 > **Set it once, never change it**
 >
 > The Fernet key is **immutable for the life of the install**. If you lose or
-> change it, every stored cloud credential becomes **undecryptable** — you'd
+> change it, every stored cloud credential becomes **undecryptable**: you'd
 > have to reconnect every integration. Treat it like a root secret.
-
 
 Generate it once, before first install:
 
@@ -32,7 +31,7 @@ Sealed Secrets, …) and pass the **same value** on every `helm upgrade`.
 
 ## The JWT secret
 
-`secrets.jwtSecret` signs user session tokens. It is **not** immutable —
+`secrets.jwtSecret` signs user session tokens. It is **not** immutable:
 rotating it simply logs everyone out and is a safe way to invalidate all
 sessions. Generate any long random string:
 
@@ -57,6 +56,6 @@ Never put real secret values in a committed `values.yaml`. Options, best first:
 - **Not secret:** discovered resource inventory, drift findings, diffs. These
   describe your infrastructure's shape, not its credentials.
 
-Cloudkeel-DD **never** stores Kubernetes `Secret` *contents* in a diff — that
+Cloudkeel-DD **never** stores Kubernetes `Secret` *contents* in a diff: that
 resource kind is excluded from comparison entirely. See the
 [security model](https://cloudkeel.io/docs/claims/security-model/).

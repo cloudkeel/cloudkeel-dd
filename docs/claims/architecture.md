@@ -9,16 +9,16 @@ Cloudkeel-DD is a small, self-contained application you run in your own
 Kubernetes cluster. We operate no endpoints of our own, so there is no
 telemetry, no analytics and no licence server. The traffic that does leave is the
 read-only API calls it makes to verify your cloud, plus anything **you** wire up
-yourself — see [data residency](#data-residency) below.
+yourself: see [data residency](#data-residency) below.
 
 ## Components
 
 | Component | Role |
 |---|---|
-| **API** (FastAPI) | The web API and UI backend — integrations, scans, drift, auth. |
+| **API** (FastAPI) | The web API and UI backend: integrations, scans, drift, auth. |
 | **Worker** (Celery) | Runs scans asynchronously: ingest state, read live cloud, diff, record. |
 | **Beat** (Celery beat) | Schedules recurring scans and scope/state re-discovery. |
-| **Frontend** (Next.js) | The UI. Proxies `/api` to the backend itself at runtime — no ingress required to reach it (see below). |
+| **Frontend** (Next.js) | The UI. Proxies `/api` to the backend itself at runtime (no ingress required to reach it, see below). |
 | **PostgreSQL** | Stores integrations, resources, scans, drift events, history. |
 | **Redis** | Celery broker/result backend and rate-limit store. |
 | **OPA** (optional) | Policy evaluation sidecar; degrades gracefully if absent. |
@@ -39,7 +39,7 @@ worker ─► your Terraform state (read)                                │
 The frontend calls the API **same-origin under `/api`**. The frontend
 container proxies those calls to the backend itself at request time, so
 `kubectl port-forward` straight to the frontend Service is enough to reach a
-fully working app — no ingress controller required. An Ingress is an optional
+fully working app; no ingress controller required. An Ingress is an optional
 production upgrade for a stable, TLS-terminated hostname in front of the same
 frontend Service.
 
@@ -57,7 +57,7 @@ frontend Service.
 All state, credentials, and findings live in **your** PostgreSQL, inside your
 cluster. Cloud credentials are encrypted at rest with a
 [Fernet key](https://cloudkeel.io/docs/configuration/secrets/) that only your install holds.
-**Cloud credentials never leave your environment** — nothing reads them out of
+**Cloud credentials never leave your environment**: nothing reads them out of
 the database and sends them anywhere.
 
 Findings are a different question, and worth stating precisely. There are no
@@ -77,5 +77,5 @@ to the endpoints you connect: your Terraform backend, your cloud, your clusters.
 
 Installed with a **Helm chart**. A per-release migration Job runs Alembic to
 build/upgrade the schema before the app starts. Bundled PostgreSQL and Redis are
-fine for a pilot; production should point at managed/external instances — see
+fine for a pilot; production should point at managed/external instances; see
 [production installation](https://cloudkeel.io/docs/getting-started/production-install/).

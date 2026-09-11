@@ -11,8 +11,8 @@ wrong one is the usual cause of "I silenced this and it came back."
 
 | Mechanism | Acts | Expires | Removing it reopens findings? |
 |---|---|---|---|
-| Baseline exclusions | Before scoring | No | n/a — re-evaluated each scan |
-| Ignore rules | Before a finding is recorded, and on findings that already exist | No | **No** — see below |
+| Baseline exclusions | Before scoring | No | n/a: re-evaluated each scan |
+| Ignore rules | Before a finding is recorded, and on findings that already exist | No | **No** (see below) |
 | Maintenance windows | At the moment a finding is created | Yes, at the window's end | Yes, on expiry |
 | Manual suppression | On one existing finding | Optional | Yes, on expiry |
 
@@ -20,18 +20,18 @@ wrong one is the usual cause of "I silenced this and it came back."
 
 Your cloud creates resources you never declared. Default VPC security groups,
 service-linked roles, AKS node resource groups, GCP's `default-allow-*` firewall
-rules — none of these are in your Terraform, and all of them are expected.
+rules: none of these are in your Terraform, and all of them are expected.
 
 Cloudkeel-DD ships a catalog of **14 entries** covering the common cases:
 
 | Cloud | Entries |
 |---|---|
-| AWS | 2 — service-linked IAM roles, default VPC security group |
-| Azure | 4 — AKS managed node resource groups, Network Watcher, Backup, Databricks managed resource groups |
-| GCP | 4 — default network firewall rules, three classes of Google-managed service agent |
-| Kubernetes | 4 — `kubectl rollout restart`, the default `kubernetes` Service, the `kube-root-ca` ConfigMap, provider-managed namespaces |
+| AWS | 2: service-linked IAM roles, default VPC security group |
+| Azure | 4: AKS managed node resource groups, Network Watcher, Backup, Databricks managed resource groups |
+| GCP | 4: default network firewall rules, three classes of Google-managed service agent |
+| Kubernetes | 4: `kubectl rollout restart`, the default `kubernetes` Service, the `kube-root-ca` ConfigMap, provider-managed namespaces |
 
-A matched finding is still **recorded** — it is not hidden — but it is forced
+A matched finding is still **recorded** (it is not hidden) but it is forced
 not-serious, so it never alerts. You can disable any catalog entry for your own
 workspace if you would rather see it.
 
@@ -41,7 +41,7 @@ flag, so a security group you created and named `default` is silently baselined
 too. If you have one, rename it or disable that entry.
 
 **This catalog is thin for a large estate.** GKE in particular generates
-undeclared resources — node VMs, `gke-*` firewall rules — that the catalog does
+undeclared resources (node VMs, `gke-*` firewall rules) that the catalog does
 not yet cover. Expect noise on your first GCP scan and tell us which patterns to
 add.
 
@@ -50,7 +50,7 @@ add.
 An ignore rule stops a finding being recorded at all. A rule matches on any
 combination of resource type, namespace, and a name pattern.
 
-- The name pattern is a **glob**, not SQL — `?` and character classes work as
+- The name pattern is a **glob**, not SQL; `?` and character classes work as
   they do in a shell.
 - **A rule with no criteria at all matches nothing**, not everything. Creating
   one is rejected, and any that already exist are treated as inert.
@@ -65,13 +65,13 @@ This is deliberate, and it is the single behaviour most likely to surprise you.
 
 Nothing in the scan path reopens a suppressed finding. Findings silenced by an
 ignore rule are suppressed with **no expiry**, because the reason they are quiet
-is the rule, and the rule does not expire — handing them to the expiry sweep
+is the rule, and the rule does not expire: handing them to the expiry sweep
 would reopen them, and the very next scan would silence them again.
 
 **So delete in the right order:**
 
 1. **Disable** the rule.
-2. **Unsuppress** its findings — there is a bulk unsuppress-by-rule action for
+2. **Unsuppress** its findings: there is a bulk unsuppress-by-rule action for
    exactly this.
 3. **Then delete** the rule.
 
@@ -85,7 +85,7 @@ has the commands and the expected output.
 
 If that already happened, there is a repair. Cloudkeel-DD can identify findings
 that are suppressed, have no owning rule, no owning window, no human who
-suppressed them, and no expiry — a state nothing else produces — and reopen them.
+suppressed them, and no expiry (a state nothing else produces) and reopen them.
 
 It is **manual on purpose**. You are shown the count and a sample before anything
 changes, and the repair reopens findings **without re-arming notifications**:
@@ -119,8 +119,8 @@ covers closing one ahead of time.
 
 ## Manual suppression
 
-Suppressing one finding by hand requires a **non-empty reason** — enforced in the
-state machine, not just the API schema — and takes an optional expiry. When the
+Suppressing one finding by hand requires a **non-empty reason** (enforced in the
+state machine, not just the API schema) and takes an optional expiry. When the
 expiry passes, a sweep running every 15 minutes reopens the finding and re-arms
 its notification.
 
@@ -135,6 +135,6 @@ its notification.
 
 ## Next
 
-- [The drift lifecycle](https://cloudkeel.io/docs/concepts/drift-lifecycle/) — scoring, attribution, and the seven states
-- [Why Cloudkeel-DD scores drift instead of just reporting it](https://cloudkeel.io/docs/claims/reducing-noise/) — the reasoning behind all of this
-- [Route findings to the right team](https://cloudkeel.io/docs/usage/ownership-routing/) — quieting is only half the problem
+- [The drift lifecycle](https://cloudkeel.io/docs/concepts/drift-lifecycle/): scoring, attribution, and the seven states
+- [Why Cloudkeel-DD scores drift instead of just reporting it](https://cloudkeel.io/docs/claims/reducing-noise/): the reasoning behind all of this
+- [Route findings to the right team](https://cloudkeel.io/docs/usage/ownership-routing/): quieting is only half the problem

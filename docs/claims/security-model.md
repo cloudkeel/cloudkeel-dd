@@ -16,7 +16,7 @@ cluster, reads with least-privilege credentials, and never writes to your cloud.
 - **No auto-remediation.** It produces a revert plan for drift; acting on it
   stays with you.
 - The [least-privilege reference](https://cloudkeel.io/docs/claims/least-privilege/) lists the exact
-  permissions each credential needs — all read/list/get, nothing mutating.
+  permissions each credential needs: all read/list/get, nothing mutating.
 
 ## What it reads
 
@@ -28,7 +28,7 @@ cluster, reads with least-privilege credentials, and never writes to your cloud.
 
 ## What it never reads or stores
 
-- **Kubernetes `Secret` contents are excluded** from comparison entirely — secret
+- **Kubernetes `Secret` contents are excluded** from comparison entirely: secret
   values never land in a diff.
 - It reads Helm's own **release** secrets only to learn desired state (the
   rendered manifest), and still never diffs `Secret` objects.
@@ -40,25 +40,25 @@ cluster, reads with least-privilege credentials, and never writes to your cloud.
 - Connected credentials are **encrypted at rest** with your install's immutable
   [Fernet key](https://cloudkeel.io/docs/configuration/secrets/).
 - Credentials are supplied by you and scoped narrowly (a bucket, a subscription,
-  a cluster). Rotating them is a mint-new-key-then-update flow — see
+  a cluster). Rotating them is a mint-new-key-then-update flow: see
   [troubleshooting](https://cloudkeel.io/docs/integrations/troubleshooting/).
 
 ## Network & data residency
 
-- All data — inventory, findings, encrypted credentials — stays in **your**
+- All data (inventory, findings, encrypted credentials) stays in **your**
   PostgreSQL inside your cluster.
 - Outbound calls go **only** to the endpoints you connect: your Terraform
   backend, your cloud, your clusters. The site and app make no third-party
   calls.
 - The UI is reached via `kubectl port-forward` by default, or through your own
-  ingress if you opt in — terminate TLS there in production.
+  ingress if you opt in. Terminate TLS there in production.
 
 ## Application security
 
 - All container images run as a **non-root** user.
 - The API enforces authentication; sessions are signed with the JWT secret.
 - Rate limiting protects the API (configurable).
-- Policy evaluation (OPA) is **best-effort** — a broken or absent policy engine
+- Policy evaluation (OPA) is **best-effort**: a broken or absent policy engine
   degrades gracefully and never fails a scan or exposes data.
 
 ## Tenancy

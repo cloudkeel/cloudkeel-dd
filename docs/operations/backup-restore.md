@@ -5,7 +5,7 @@ description: "What to back up - PostgreSQL and the Fernet key - and how to resto
 
 > Mirrored for search visibility. Canonical, always-current version: **[https://cloudkeel.io/docs/operations/backup-restore/](https://cloudkeel.io/docs/operations/backup-restore/)**
 
-Everything Cloudkeel-DD needs to reconstruct itself lives in **PostgreSQL** —
+Everything Cloudkeel-DD needs to reconstruct itself lives in **PostgreSQL**:
 integrations, encrypted credentials, discovered resources, and drift history.
 Back up the database and safeguard the Fernet key, and you can restore fully.
 
@@ -17,7 +17,7 @@ Back up the database and safeguard the Fernet key, and you can restore fully.
 | **Fernet key** | Your secret manager | Without it, restored credential rows are undecryptable |
 | **Helm values** | Version control (secrets referenced, not inlined) | Reproduce the exact install |
 
-Redis holds only transient queue/rate-limit data — it does **not** need backup;
+Redis holds only transient queue/rate-limit data: it does **not** need backup;
 it rebuilds itself.
 
 ## Backing up PostgreSQL
@@ -29,7 +29,7 @@ pg_dump --format=custom --no-owner "$DATABASE_URL" > d-detective-$(date +%F).dum
 ```
 
 Automate it on your normal database backup schedule. Findings are re-derivable on
-the next scan, but history and acknowledgements are not — so back up regularly.
+the next scan, but history and acknowledgements are not, so back up regularly.
 
 ## Restoring
 
@@ -46,10 +46,9 @@ the next scan, but history and acknowledgements are not — so back up regularly
 > **The Fernet key is part of your backup**
 >
 > A database backup without the matching Fernet key can restore *inventory and
-> history* but **not** usable cloud credentials — you'd reconnect every
+> history* but **not** usable cloud credentials: you'd reconnect every
 > integration. Store the key alongside your backup policy, in your secret
 > manager. See [Secrets](https://cloudkeel.io/docs/configuration/secrets/).
-
 
 ## Disaster recovery
 

@@ -10,16 +10,16 @@ need **two** integrations working together.
 
 ## The two-part model
 
-1. A **state source** (Terraform Cloud, or raw `.tfstate` in S3/GCS/Azure Blob)
-   — the *desired* state.
-2. A **cross-check credential** (Azure / AWS / GCP, read-only) — the *actual*
+1. A **state source** (Terraform Cloud, or raw `.tfstate` in S3/GCS/Azure Blob):
+   the *desired* state.
+2. A **cross-check credential** (Azure / AWS / GCP, read-only): the *actual*
    live state.
 
 With only the state source, resources are discovered but tagged *"no live
 comparison available"*: inventory, not drift. With only the cross-check
 credential, there's nothing to compare against. **Connect both**, per cloud.
 
-Kubernetes is the exception — one kubeconfig integration is self-contained
+Kubernetes is the exception: one kubeconfig integration is self-contained
 (desired = Helm release record, actual = live API).
 
 ## The recommended path
@@ -38,7 +38,7 @@ field-level verification. Start there, then add more sources.
 | [Azure Blob state](https://cloudkeel.io/docs/integrations/azure-state/) | Raw `.tfstate` in Azure Storage, via a narrow SAS |
 | [AWS S3 state](https://cloudkeel.io/docs/integrations/aws-state/) | Raw `.tfstate` in S3, via a bucket-scoped IAM user |
 | [GCP GCS state](https://cloudkeel.io/docs/integrations/gcp-state/) | Raw `.tfstate` in GCS, via a bucket-scoped service account |
-| [Kubernetes / Helm](https://cloudkeel.io/docs/integrations/kubernetes/) | Drift on Helm releases — AKS, EKS, GKE, or any cluster |
+| [Kubernetes / Helm](https://cloudkeel.io/docs/integrations/kubernetes/) | Drift on Helm releases: AKS, EKS, GKE, or any cluster |
 
 ## Which credential goes where
 
@@ -52,7 +52,7 @@ credential you will create:
 | Azure cross-check | AAD app registration (service principal) | **Reader** on each subscription to verify | Client secret, shown once at creation |
 | AWS cross-check | IAM user or role | Read-only on the described services | Access key ID + secret access key |
 | GCP cross-check | Service account | Viewer / Cloud Asset Inventory read on the project | JSON key file |
-| Azure Blob state | **SAS token** — no app registration, no RBAC | Read + List on **one container** | Query string from `generate-sas` |
+| Azure Blob state | **SAS token**: no app registration, no RBAC | Read + List on **one container** | Query string from `generate-sas` |
 | AWS S3 state | IAM user, separate from the cross-check one | `s3:ListBucket` + `s3:GetObject` on **one bucket** | Access key ID + secret access key |
 | GCP GCS state | Service account, separate from the cross-check one | `storage.objectViewer` on **one bucket** | JSON key file |
 | Terraform Cloud / Enterprise | User or team API token | Read on the workspaces | Token from the TFC/TFE UI |
@@ -65,7 +65,7 @@ Three things that trip people up:
   container; the cross-check one reads live resources across a whole
   subscription, account, or project. Reusing one for both grants it more than it
   needs.
-- **Azure state needs no app registration at all** — it is a plain SAS. If you are
+- **Azure state needs no app registration at all**: it is a plain SAS. If you are
   creating a service principal for it, you are on the wrong guide.
 - **One credential per cloud, for now.** A second Azure tenant or AWS account
   cannot be connected alongside the first; the API rejects it.
@@ -74,13 +74,13 @@ Three things that trip people up:
 
 - [ ] **State source connected**, and each discovered `.tfstate` **Enabled**.
 - [ ] **Cross-check credential connected** for the same cloud.
-- [ ] **Cross-check scope enabled** — AWS/GCP auto-enable; **Azure** leaves
+- [ ] **Cross-check scope enabled**: AWS/GCP auto-enable; **Azure** leaves
       discovered subscriptions disabled until you opt in.
 - [ ] **Kubernetes:** a static **token** kubeconfig, not an exec-plugin one.
 - [ ] **EKS:** cluster API access enabled first (access entry).
 
-Hitting a **Test connection** error? See **[Troubleshooting](https://cloudkeel.io/docs/integrations/troubleshooting/)**
-— every failure mode mapped to its fix.
+Hitting a **Test connection** error? See **[Troubleshooting](https://cloudkeel.io/docs/integrations/troubleshooting/)**:
+every failure mode mapped to its fix.
 
 ## Credentials are always read-only
 

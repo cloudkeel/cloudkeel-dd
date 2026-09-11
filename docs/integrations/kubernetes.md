@@ -25,7 +25,9 @@ Anything changed out-of-band - a `kubectl edit`, a `kubectl scale`, a console
 click - shows up as a field-level diff.
 
 Supported kinds: `Deployment`, `StatefulSet`, `DaemonSet`, `Service`,
-`ConfigMap`, `Ingress`. **`Secret` is deliberately excluded** so secret values
+`ConfigMap`, `Ingress`, `NetworkPolicy`, `Job`, `CronJob`, `HorizontalPodAutoscaler`,
+`PersistentVolumeClaim`, `ServiceAccount`.
+**`Secret` is deliberately excluded** so secret values
 never land in a diff.
 
 ## Important: use a static kubeconfig, not an exec-plugin one
@@ -104,13 +106,19 @@ metadata:
   name: ddetective-reader
 rules:
 - apiGroups: [""]
-  resources: ["services", "configmaps", "secrets"]
+  resources: ["services", "configmaps", "secrets", "persistentvolumeclaims", "serviceaccounts"]
   verbs: ["get", "list", "watch"]
 - apiGroups: ["apps"]
   resources: ["deployments", "statefulsets", "daemonsets"]
   verbs: ["get", "list", "watch"]
 - apiGroups: ["networking.k8s.io"]
-  resources: ["ingresses"]
+  resources: ["ingresses", "networkpolicies"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["batch"]
+  resources: ["jobs", "cronjobs"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["autoscaling"]
+  resources: ["horizontalpodautoscalers"]
   verbs: ["get", "list", "watch"]
 # Reads the kube-system namespace UID, which is the permanent per-cluster
 # fingerprint Cloudkeel-DD uses to keep two clusters' identically-named objects
@@ -225,8 +233,8 @@ public LoadBalancer exposure without an exception annotation.
 ## Unmanaged workload detection
 
 Alongside comparing Helm-managed objects, Cloudkeel-DD lists every object of the
-six supported kinds and flags the ones no tool claims. This needs no Terraform
-state source — unlike the cloud connectors, where a state file is what defines
+twelve supported kinds and flags the ones no tool claims. This needs no Terraform
+state source, unlike the cloud connectors, where a state file is what defines
 "managed".
 
 Ownership is read from **each object's own metadata**, not by asking your
@@ -241,11 +249,11 @@ Reading ownership off the object rather than querying ArgoCD or Flux is
 deliberate. It keeps detection per-cluster (an ArgoCD Application on one cluster
 can't silence a rogue workload on another), it survives an unreachable GitOps
 server, and it needs no access to `argoproj.io` or `*.toolkit.fluxcd.io` custom
-resources — which the ServiceAccount above does not grant.
+resources, which the ServiceAccount above does not grant.
 
 **The trade-off:** labels can be stripped. An object whose ownership metadata was
 removed reads as unmanaged. Nothing on the object claims it, so that is arguably
-the honest answer — but if your cluster rewrites labels, expect findings here.
+the honest answer, but if your cluster rewrites labels, expect findings here.
 
 To verify it works, create something nothing owns and re-scan:
 

@@ -1,7 +1,7 @@
 # Documentation
 
 This is a **mirror** of [cloudkeel.io/docs](https://cloudkeel.io/docs) for
-search visibility — the live site is canonical and updates first. Every page
+search visibility: the live site is canonical and updates first. Every page
 here links back to its own live version. If something looks stale, trust the
 link, not the page.
 
@@ -78,5 +78,5 @@ link, not the page.
 ---
 
 Something wrong or out of date? [Open an issue](../../../issues/new/choose)
-(redact credentials/hostnames first — see [SUPPORT.md](../SUPPORT.md)), or
+(redact credentials/hostnames first: see [SUPPORT.md](../SUPPORT.md)), or
 just use the live site linked at the top of every page.

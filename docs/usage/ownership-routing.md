@@ -65,13 +65,11 @@ That listing returns `owner_team`, `service_name`, `business_unit`, and
 > script the PATCH calls from whatever your existing source of ownership
 > truth is rather than editing each resource in the drawer.
 
-
 > [!WARNING]
 > **There is no way to clear a field back to empty via the API**
 >
 > Passing `null` in a PATCH means "leave unchanged", not "clear". To blank a
 > field over the API, send an empty string.
-
 
 ### 2. Route notifications by team
 

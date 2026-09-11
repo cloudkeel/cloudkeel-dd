@@ -111,20 +111,20 @@ Discovery re-runs automatically every 6 hours.
 
 ## What gets verified
 
-**Field-level drift verification — 79 Azure resource types**, of which **68** are
+**Field-level drift verification: 79 Azure resource types**, of which **68** are
 cross-checked when the desired state comes from a Terraform plan and **77** from
 raw `.tfstate`.
 
 The [coverage page](https://cloudkeel.io/docs/claims/coverage/) lists every one of them with its
 per-path status, and is generated at build time from the product's own type
-registry — read the per-type detail there rather than from a list on this page.
+registry; read the per-type detail there rather than from a list on this page.
 
 The only types whose two paths differ:
 
 - **`azurerm_role_assignment` and `azurerm_role_definition` are plan-path only.**
   The raw-state path has no ARM api-version entry for them, so they are tracked
   as inventory there.
-- **Eleven types are raw-state-path only** — among them SQL databases, elastic
+- **Eleven types are raw-state-path only**: among them SQL databases, elastic
   pools, storage containers and shares, service bus queues and topics, and the
   Windows VM / function-app / web-app types. Connect a state source if those
   matter to you.
@@ -141,10 +141,10 @@ Two limits to know before your first scan:
 
 - **Key Vault keys are invisible to this cross-check.** They are data-plane
   objects that Resource Graph and ARM do not expose, so `azurerm_key_vault`
-  compares vault-level posture instead — purge protection, RBAC mode, network
+  compares vault-level posture instead: purge protection, RBAC mode, network
   access.
 - **SQL TDE and backup retention are per-database child resources.**
-  `azurerm_mssql_server` compares server-level posture instead — public network
+  `azurerm_mssql_server` compares server-level posture instead: public network
   access and minimum TLS version.
 
 ## Notes

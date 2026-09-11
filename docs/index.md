@@ -14,21 +14,21 @@ reads with read-only credentials, and never writes to your cloud.
 
 ## Where to start
 
-- **[Pilot quickstart](https://cloudkeel.io/docs/getting-started/pilot/)** — install on your own
+- **[Pilot quickstart](https://cloudkeel.io/docs/getting-started/pilot/)**: install on your own
   cluster and read your first drift finding.
-- **[Connecting integrations](https://cloudkeel.io/docs/integrations/overview/)** — the
+- **[Connecting integrations](https://cloudkeel.io/docs/integrations/overview/)**: the
   desired-vs-actual model, then per-cloud setup with the exact read-only
   permissions each one needs.
-- **[The drift lifecycle](https://cloudkeel.io/docs/concepts/drift-lifecycle/)** — how a finding is
+- **[The drift lifecycle](https://cloudkeel.io/docs/concepts/drift-lifecycle/)**: how a finding is
   scored, attributed, and resolved.
-- **[Coverage](https://cloudkeel.io/docs/claims/coverage/)** — exactly which resource types are
+- **[Coverage](https://cloudkeel.io/docs/claims/coverage/)**: exactly which resource types are
   checked field-by-field, and which are tracked as inventory.
 
 ## Reference
 
-- **[Act on a drift finding](https://cloudkeel.io/docs/usage/remediation/)** — accept, revert, suppress, or open a remediation PR
-- **[Baselines and suppression](https://cloudkeel.io/docs/concepts/baselines-and-suppression/)** — the four ways a finding goes quiet
-- **[Security model](https://cloudkeel.io/docs/claims/security-model/)** — what is read, what is never read, and where credentials live
-- **[Feature inventory](https://cloudkeel.io/docs/claims/feature-inventory/)** — every capability, marked shipped or gap
-- **[Troubleshooting](https://cloudkeel.io/docs/integrations/troubleshooting/)** — why an integration has no findings
-- **[Glossary](https://cloudkeel.io/docs/reference/glossary/)** — drift, unmanaged, scope, inventory, spec
+- **[Act on a drift finding](https://cloudkeel.io/docs/usage/remediation/)**: accept, revert, suppress, or open a remediation PR
+- **[Baselines and suppression](https://cloudkeel.io/docs/concepts/baselines-and-suppression/)**: the four ways a finding goes quiet
+- **[Security model](https://cloudkeel.io/docs/claims/security-model/)**: what is read, what is never read, and where credentials live
+- **[Feature inventory](https://cloudkeel.io/docs/claims/feature-inventory/)**: every capability, marked shipped or gap
+- **[Troubleshooting](https://cloudkeel.io/docs/integrations/troubleshooting/)**: why an integration has no findings
+- **[Glossary](https://cloudkeel.io/docs/reference/glossary/)**: drift, unmanaged, scope, inventory, spec

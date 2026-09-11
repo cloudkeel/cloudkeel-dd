@@ -17,9 +17,9 @@ the difference, **score** it, **attribute** it to whoever made the change, then
 
 A scan compares a desired state against an actual state.
 
-- **Desired** — a Terraform Cloud workspace, a raw `.tfstate` file, or, for
+- **Desired**: a Terraform Cloud workspace, a raw `.tfstate` file, or, for
   Kubernetes, Helm's own stored release manifest.
-- **Actual** — a live read of the cloud provider or Kubernetes API.
+- **Actual**: a live read of the cloud provider or Kubernetes API.
 
 The comparison runs field by field through a type-specific spec. A type with no
 spec is never diffed against a guess: it is annotated
@@ -34,16 +34,16 @@ Two things are ignored by design:
   dozens of fields no chart mentions. Changing a field the manifest owns is
   drift; a field appearing that it never owned is not.
 
-## 2. Score — the severity gate
+## 2. Score: the severity gate
 
 Every finding is scored against your own rule set. A rule matches on three
-optional fields — resource type, environment, and property category — and
+optional fields (resource type, environment, and property category) and
 produces two things: a **severity** (`harmless`, `risky`, `critical`) and a
 boolean **is-serious**.
 
 **The most specific match wins.** Specificity is simply how many of the three
 fields the rule pins down. Ties break by priority, then by which rule was created
-most recently — so a newer rule you wrote beats an older one at equal
+most recently, so a newer rule you wrote beats an older one at equal
 specificity.
 
 Every workspace starts with four editable rules:
@@ -64,7 +64,7 @@ Two behaviours worth knowing:
   workspace that deleted every rule fails toward visible, never toward silent.
 
 Findings matched by the baseline registry are forced not-serious regardless of
-severity — see [Baselines and suppression](https://cloudkeel.io/docs/concepts/baselines-and-suppression/).
+severity: see [Baselines and suppression](https://cloudkeel.io/docs/concepts/baselines-and-suppression/).
 
 → Severity rules are edited on the Policies page. If findings are reaching the
 wrong people rather than being wrongly scored, the fix is
@@ -88,14 +88,14 @@ and the scan continues. Attribution never fails a scan.
 
 On AWS, CloudTrail's own 90-day retention is a further ceiling.
 
-If attribution matters to you, grant the optional per-cloud read permission —
+If attribution matters to you, grant the optional per-cloud read permission:
 `cloudtrail:LookupEvents`, `logging.logEntries.list`, or Azure's built-in Reader,
 which already includes it.
 
 → [How to see who changed a resource](https://cloudkeel.io/docs/usage/who-changed-it/) has the exact
 grant per cloud, and a symptom table for when the field stays blank.
 
-## 4. Record — the seven states
+## 4. Record: the seven states
 
 A finding is a lifecycle entity, not a per-scan row. A re-scan of still-drifted
 infrastructure refreshes the finding in place rather than raising a duplicate.
@@ -133,7 +133,7 @@ A finding that has already been announced will not be announced again unless one
 of exactly three things happens:
 
 1. **It is created** in the open state.
-2. **It reopens or is promoted** — from auto-closed, suppressed, or
+2. **It reopens or is promoted**: from auto-closed, suppressed, or
    pending_verification back to open.
 3. **Its severity escalates** on a later scan.
 
@@ -141,8 +141,8 @@ Acknowledging and then un-acknowledging a finding deliberately does *not* re-arm
 it: you are acting on an alert you are already looking at, not receiving new
 information.
 
-Reopening is the highest-signal thing this product says — it means the fix you
-claimed did not hold — so it is armed even though the finding was announced
+Reopening is the highest-signal thing this product says: it means the fix you
+claimed did not hold, so it is armed even though the finding was announced
 during its previous open spell.
 
 One deliberate exception: reopening findings through orphan recovery does not
@@ -164,6 +164,6 @@ Where each state transition comes from, in task terms:
 
 ## Next
 
-- [Baselines and suppression](https://cloudkeel.io/docs/concepts/baselines-and-suppression/) — the four ways a finding goes quiet
-- [Why Cloudkeel-DD scores drift instead of just reporting it](https://cloudkeel.io/docs/claims/reducing-noise/) — why the severity gate exists
-- [Coverage](https://cloudkeel.io/docs/claims/coverage/) — which resource types reach this pipeline at all
+- [Baselines and suppression](https://cloudkeel.io/docs/concepts/baselines-and-suppression/): the four ways a finding goes quiet
+- [Why Cloudkeel-DD scores drift instead of just reporting it](https://cloudkeel.io/docs/claims/reducing-noise/): why the severity gate exists
+- [Coverage](https://cloudkeel.io/docs/claims/coverage/): which resource types reach this pipeline at all

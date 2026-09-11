@@ -7,7 +7,7 @@ description: "Short answers on read-only access, what Cloudkeel-DD needs to run,
 
 ## Does Cloudkeel-DD change my infrastructure?
 
-No. It is strictly **read-only** — it never creates, updates, or deletes cloud
+No. It is strictly **read-only**: it never creates, updates, or deletes cloud
 resources and never runs `terraform apply`. It reports drift and gives you a
 revert plan; acting on it is up to you. See the
 [security model](https://cloudkeel.io/docs/claims/security-model/).
@@ -19,14 +19,15 @@ in your PostgreSQL; outbound calls go only to the sources you connect.
 
 ## Does the install expire?
 
-It scans for **30 days from the moment you create your first workspace**, then
-stops *starting* new scans. That is a local date comparison inside your cluster
-— nothing phones home, there is no licence server, and it behaves the same
-air-gapped.
+No. It scans unmetered for **30 days from the moment you create your first
+workspace**, then the trial ends and the install **converts to Free**: 1
+enabled scope, 3 users, every feature, forever - it does not stop. That is a
+local date comparison inside your cluster, nothing phones home, there is no
+licence server, and it behaves the same air-gapped.
 
 Nothing is deleted and nothing else changes: findings, history, connected
 integrations and logins all keep working, and any scan already running finishes.
-An upgrade can never cut an existing install short — the 30 days runs from
+An upgrade can never cut an existing install short: the 30 days runs from
 whichever is later, your first workspace or the first version you ran that
 enforces the timer.
 
@@ -39,7 +40,7 @@ and we extend it.
 
 One supplies *desired* state (Terraform/state source), the other reads *actual*
 state (a cloud cross-check credential). Drift is the diff between them, so you
-need both. Kubernetes is the exception — one kubeconfig is self-contained.
+need both. Kubernetes is the exception: one kubeconfig is self-contained.
 See [how it works](https://cloudkeel.io/docs/claims/how-it-works/).
 
 ## I connected everything but no drift shows up.
@@ -56,27 +57,38 @@ security-relevant fields (firewall/security-group rules, replica counts, images)
 
 ## Which resources get full field-level drift detection?
 
-The field-level diff engine covers 200 resource types — 79 Azure, 62 AWS, 59 GCP
-— each engine-verified via golden fixtures. Which ones are cross-checked against
+The field-level diff engine covers 200 resource types (79 Azure, 62 AWS, 59 GCP),
+each engine-verified via golden fixtures. Which ones are cross-checked against
 your live cloud depends on your state source, not your cloud: raw `.tfstate`
 reaches 198 of them, a Terraform plan reaches 128 (all GCP, 68 Azure, and AWS
-security groups only). A much smaller subset — three types — is proven against
+security groups only). A much smaller subset, three types, is proven against
 real cloud accounts, and we keep those two numbers apart.
-Everything else is discovered and tracked as inventory, honestly labelled — never
+Everything else is discovered and tracked as inventory, honestly labelled, never
 assumed clean. See the [coverage page](https://cloudkeel.io/docs/claims/coverage/) for the full
 tables; the [feature inventory](https://cloudkeel.io/docs/claims/feature-inventory/) marks each
 capability Shipped or Gap.
 
+## Will scanning show up on my cloud bill, or get throttled?
+
+No cloud bill impact - every call is a read-only control-plane metadata call
+(Azure Resource Graph, AWS Cloud Control, GCP Cloud Asset Inventory), the same
+class of call as `terraform plan`'s refresh, never billed by the provider.
+Discovering everything in a scope is a handful of bulk calls regardless of
+resource count; per-resource field-level drift comparison does scale with how
+many resources your state declares, but it's paced by a built-in rate limiter
+(10 req/s by default) that backs off automatically on a provider throttle
+response. See [how it works](https://cloudkeel.io/docs/claims/how-it-works/#does-scanning-cost-anything-on-your-cloud-bill-or-hit-rate-limits).
+
 ## Does it work with EKS and GKE, not just AKS?
 
-Yes — the Kubernetes integration talks to the Kubernetes API, so any distribution
+Yes. The Kubernetes integration talks to the Kubernetes API, so any distribution
 works. EKS needs cluster API access enabled first (an access entry); see
 [Kubernetes setup](https://cloudkeel.io/docs/integrations/kubernetes/).
 
 ## Do I need Argo CD or Flux?
 
 No. The Kubernetes integration compares **Helm's own release record** against the
-live API — it's built for plain `helm install`/`upgrade` with no GitOps tool. If
+live API; it's built for plain `helm install`/`upgrade` with no GitOps tool. If
 you *do* run Argo/Flux, use those instead.
 
 ## What happens if the policy engine (OPA) is down?
@@ -86,7 +98,7 @@ unmanaged resources and records findings without policy tags.
 
 ## How do I rotate a credential?
 
-Mint a fresh key for the same read-only identity and update the integration — no
+Mint a fresh key for the same read-only identity and update the integration, no
 downtime. Old keys can't be re-read, so always create new rather than reuse.
 Steps in [troubleshooting](https://cloudkeel.io/docs/integrations/troubleshooting/).
 

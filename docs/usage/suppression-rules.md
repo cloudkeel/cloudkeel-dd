@@ -28,7 +28,6 @@ For a *planned, time-boxed* change, use a
 > If you are looking for "suppression rules", that was the old name for ignore
 > rules - the product calls them ignore rules everywhere now.
 
-
 ## Prerequisites
 
 - An account with the **ADMIN** or **OWNER** role. Viewers can see rules but
@@ -62,7 +61,6 @@ For a *planned, time-boxed* change, use a
 > A rule with no criteria set is rejected. This is deliberate: the
 > failure mode of "empty means match everything" would silence an entire
 > estate by accident.
-
 
 4. Fill in the **reason**. The form marks it optional and will save without it -
    do it anyway. This is the field that makes the rule reviewable later, and it
@@ -139,7 +137,7 @@ Deactivate or edit the rule first, then unsuppress.
 > [!WARNING]
 > **Delete the rule last, not first**
 >
-> `unsuppress` needs the rule to still exist — it takes the rule's id, and returns
+> `unsuppress` needs the rule to still exist: it takes the rule's id, and returns
 > `404` once the rule is gone. Delete first and the findings it silenced are left
 > with no rule to unsuppress them through. Always work in this order:
 >
@@ -147,12 +145,11 @@ Deactivate or edit the rule first, then unsuppress.
 >
 > If you already deleted one, the next section is the way back.
 
-
 ## Recovering findings stranded by a deleted rule
 
 Findings silenced by a rule that no longer exists stay `suppressed` with nothing
-pointing at them. Nothing reopens them automatically — not the next scan, not the
-suppression-expiry sweep — so without this they are invisible indefinitely.
+pointing at them. Nothing reopens them automatically (not the next scan, not the
+suppression-expiry sweep), so without this they are invisible indefinitely.
 
 First, ask how many there are. This is **read-only and available to any role**,
 because "have I lost findings?" is a question anyone looking at the board should
@@ -210,7 +207,7 @@ effect of a cleanup, would turn every rule deletion into a delayed alert storm.
 So the count is always available and the repair is always yours to trigger.
 
 The steady state here is zero. If the count is non-zero, someone deleted a rule
-out of order — worth knowing on its own.
+out of order, worth knowing on its own.
 
 ## Troubleshooting
 
@@ -220,7 +217,7 @@ out of order — worth knowing on its own.
 | Rule matches nothing | `name_pattern` is a glob, not a regex | Use `tmp-*`, not `^tmp-.*$` |
 | Rule matches far more than intended | Only one criterion set, and it was broad | Narrow the criteria, then `POST /api/ignore-rules/<id>/unsuppress` to reopen what it already silenced |
 | Deleted the rule but findings stayed quiet | Deleting never reopens what a rule already silenced | Use `POST /api/ignore-rules/<id>/unsuppress` *before* deleting. Already deleted it? [Recover the stranded findings](#recovering-findings-stranded-by-a-deleted-rule) |
-| `404` from `unsuppress` | The rule id no longer exists — it returns `404` rather than a green `{"reopened": 0}`, so this cannot be mistaken for success | [Recover the stranded findings](#recovering-findings-stranded-by-a-deleted-rule) |
+| `404` from `unsuppress` | The rule id no longer exists: it returns `404` rather than a green `{"reopened": 0}`, so this cannot be mistaken for success | [Recover the stranded findings](#recovering-findings-stranded-by-a-deleted-rule) |
 | 403 on create | Viewer role | Ask an admin, or have your role changed |
 
 ## Related

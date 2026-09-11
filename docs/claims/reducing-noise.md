@@ -101,7 +101,6 @@ it. Your explicit decision outranks the window.
 > narrowest criteria that solves the problem, and always fill in the reason
 > field so the next person understands the decision.
 
-
 ## Layer 4: routing (who hears about it)
 
 Reducing volume is only half of it. The other half is that the remaining

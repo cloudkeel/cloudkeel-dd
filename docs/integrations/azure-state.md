@@ -17,7 +17,7 @@ this one; it's a plain SAS token.
 
 In the Azure Portal: Storage account -> Containers -> your container ->
 **Access policy** -> **Add policy**. Grant **Read** and **List** permissions
-only, and set an expiry you're comfortable with (a year is reasonable — the
+only, and set an expiry you're comfortable with (a year is reasonable; the
 SAS below inherits this policy's expiry).
 
 > [!WARNING]
@@ -28,7 +28,7 @@ SAS below inherits this policy's expiry).
 > tenant-wide until the read works again, and the scan completes `partial` with the
 > 403 named against the state source.
 >
-> That is the safe direction — the alternative is worse. Before this behaviour
+> That is the safe direction. The alternative is worse. Before this behaviour
 > existed, an expired SAS made the managed set look empty and every live resource
 > read as unmanaged, so the product reported a customer's own Terraform-managed
 > estate as undeclared, at high confidence.
@@ -39,14 +39,13 @@ SAS below inherits this policy's expiry).
 >
 > Two limits to know:
 >
-> - **A SAS built on a stored access policy carries no `se=`** — the window lives
+> - **A SAS built on a stored access policy carries no `se=`**: the window lives
 >   server-side, so Cloudkeel-DD has nothing to read and shows no expiry. If you
 >   followed step 1, that is this SAS. Blank means *unknown*, never *safe*.
 > - **Integrations saved before this shipped read as no-expiry until re-saved.**
 >   Existing rows are not backfilled (deriving the date means decrypting every
 >   stored secret inside a migration). Open the integration, re-enter the SAS, and
 >   save to populate it.
-
 
 ## 2. Generate a SAS token under that policy
 

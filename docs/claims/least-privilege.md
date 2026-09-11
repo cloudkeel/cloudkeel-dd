@@ -20,7 +20,7 @@ walks through creating the credential.
 | [`gcp-iam-roles-credential-expiry.json`](https://cloudkeel.io/docs/assets/gcp-iam-roles-credential-expiry.json) | GCP cross-check, optional credential-expiry visibility |
 | [`gcp-gcs-state-iam-roles.json`](https://cloudkeel.io/docs/assets/gcp-gcs-state-iam-roles.json) | GCP raw-state bucket role |
 
-Azure has no custom-role document on purpose — it uses the **built-in Reader
+Azure has no custom-role document on purpose: it uses the **built-in Reader
 role**. See [Azure cross-check setup](https://cloudkeel.io/docs/integrations/azure-cross-check/).
 
 ## Principles
@@ -32,17 +32,17 @@ role**. See [Azure cross-check setup](https://cloudkeel.io/docs/integrations/azu
   *different* credential from the live-resource cross-check reader; they coexist
   safely and can be rotated independently.
 - **Kubernetes uses a read-only ServiceAccount** with `get/list/watch` and a
-  static token kubeconfig — no exec-plugin, no admin. See
+  static token kubeconfig, no exec-plugin, no admin. See
   [Kubernetes setup](https://cloudkeel.io/docs/integrations/kubernetes/).
 
 ## Per-provider summary
 
 | Provider | Cross-check credential | Raw state credential |
 |---|---|---|
-| **Azure** | Built-in **Reader** on the subscriptions you enable. No custom role — Reader already covers Resource Graph, ARM reads, and the Activity Log used for attribution. [Setup](https://cloudkeel.io/docs/integrations/azure-cross-check/) | A narrow, time-boxed **SAS** on the state container |
-| **AWS** | The read-only actions in `aws-iam-policy.json` — `cloudformation:ListResources`/`GetResource` for Cloud Control, plus the per-service describes it needs. `cloudtrail:LookupEvents` and `iam:ListAccessKeys` are separate, **optional** statements — attribution and access-key-age visibility respectively; neither is required for scanning. [Setup](https://cloudkeel.io/docs/integrations/aws-cross-check/) | `s3:ListBucket` on the bucket + `s3:GetObject` on its contents |
-| **GCP** | The custom role in `gcp-iam-roles.json` — `cloudasset.assets.listResource` for bulk listing, plus a `.get` permission per type that supports single reads. Two **optional** second roles add extras without changing scanning: `gcp-iam-roles-attribution.json` (`logging.logEntries.list`) for attribution, and `gcp-iam-roles-credential-expiry.json` (`iam.serviceAccountKeys.get`) so the integration list can show this key's own expiry. [Setup](https://cloudkeel.io/docs/integrations/gcp-cross-check/) | `storage.objects.get` + `storage.objects.list` on the one bucket |
-| **Kubernetes** | A ServiceAccount with `get`/`list`/`watch` on six kinds, plus `get`/`list` on namespaces and `list` on secrets to read Helm's release records. [Setup](https://cloudkeel.io/docs/integrations/kubernetes/) | n/a — Helm's own records are the desired state |
+| **Azure** | Built-in **Reader** on the subscriptions you enable. No custom role: Reader already covers Resource Graph, ARM reads, and the Activity Log used for attribution. [Setup](https://cloudkeel.io/docs/integrations/azure-cross-check/) | A narrow, time-boxed **SAS** on the state container |
+| **AWS** | The read-only actions in `aws-iam-policy.json`: `cloudformation:ListResources`/`GetResource` for Cloud Control, plus the per-service describes it needs. `cloudtrail:LookupEvents` and `iam:ListAccessKeys` are separate, **optional** statements: attribution and access-key-age visibility respectively; neither is required for scanning. [Setup](https://cloudkeel.io/docs/integrations/aws-cross-check/) | `s3:ListBucket` on the bucket + `s3:GetObject` on its contents |
+| **GCP** | The custom role in `gcp-iam-roles.json`: `cloudasset.assets.listResource` for bulk listing, plus a `.get` permission per type that supports single reads. Two **optional** second roles add extras without changing scanning: `gcp-iam-roles-attribution.json` (`logging.logEntries.list`) for attribution, and `gcp-iam-roles-credential-expiry.json` (`iam.serviceAccountKeys.get`) so the integration list can show this key's own expiry. [Setup](https://cloudkeel.io/docs/integrations/gcp-cross-check/) | `storage.objects.get` + `storage.objects.list` on the one bucket |
+| **Kubernetes** | A ServiceAccount with `get`/`list`/`watch` on six kinds, plus `get`/`list` on namespaces and `list` on secrets to read Helm's release records. [Setup](https://cloudkeel.io/docs/integrations/kubernetes/) | n/a: Helm's own records are the desired state |
 
 Two notes on the GCP role, because both cause silent failures:
 
@@ -54,7 +54,7 @@ Two notes on the GCP role, because both cause silent failures:
 ## Both cloud credential files were regenerated on 2026-08-07
 
 They were written when the engine field-diffed 22 resource types and were never
-grown as coverage reached 200. **Re-apply them if you set yours up earlier** —
+grown as coverage reached 200. **Re-apply them if you set yours up earlier**:
 [AWS](https://cloudkeel.io/docs/integrations/aws-cross-check/), [GCP](https://cloudkeel.io/docs/integrations/gcp-cross-check/).
 
 Under-granting fails quietly by design: a permission error on one type becomes a
@@ -62,12 +62,12 @@ per-type *"not verifiable"* note rather than a failed scan, so one gap can never
 sink a whole source. The cost is that an under-scoped credential looks like thin
 coverage instead of a permissions problem. If a type you expect to be
 field-diffed shows *"not verifiable"*, check the credential before concluding
-Cloudkeel-DD does not cover it — see
+Cloudkeel-DD does not cover it: see
 [troubleshooting](https://cloudkeel.io/docs/integrations/troubleshooting/#a-type-reports-not-verifiable).
 
 Neither file is hand-maintained any more. The AWS policy is generated from each
 type's `handlers.read.permissions` **and** `handlers.list.permissions` in the
-CloudFormation registry — reading one resource by id and enumerating all of
+CloudFormation registry: reading one resource by id and enumerating all of
 them are separate Cloud Control handlers, and the 2026-08-07 regeneration
 covered only the former, missing list-only actions (`lambda:ListFunctions`
 most visibly) until 2026-08-28. The GCP role is generated from the connector's
@@ -79,5 +79,5 @@ handler a type needs.
 ## Rotation
 
 Reader keys can't be re-read after creation, so rotate by **minting a fresh key**
-for the same identity and updating the integration — no downtime. Full steps in
+for the same identity and updating the integration: no downtime. Full steps in
 [troubleshooting](https://cloudkeel.io/docs/integrations/troubleshooting/).

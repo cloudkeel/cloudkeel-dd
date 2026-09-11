@@ -32,7 +32,6 @@ For noise you want gone permanently, use an
 > There is no "every Saturday 02:00-04:00" schedule. Each window is one
 > explicit time range. For recurring work, create a window per occurrence.
 
-
 4. Set at least one match criterion - the same three fields an ignore rule
    uses, matched the same way:
 
@@ -92,7 +91,6 @@ them back sooner.
 > delete. A window's scope changing underneath suppressions it already
 > created would make those records untrustworthy. Cancel it and create a new
 > one instead.
-
 
 ## Troubleshooting
 

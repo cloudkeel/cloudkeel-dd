@@ -6,7 +6,7 @@ description: "The three things Cloudkeel-DD reports continuously: drift, unmanag
 > Mirrored for search visibility. Canonical, always-current version: **[https://cloudkeel.io/docs/claims/what-it-does/](https://cloudkeel.io/docs/claims/what-it-does/)**
 
 Cloudkeel-DD answers one question continuously: **does your live infrastructure
-still match what Terraform declared — and what's running that nobody declared?**
+still match what Terraform declared, and what's running that nobody declared?**
 
 ## The problem
 
@@ -19,7 +19,7 @@ exists right now. Between applies, infrastructure drifts:
 - a security group or firewall rule is widened to unblock someone.
 
 `terraform plan` can catch *some* of this, but only for resources already in
-state, only when you run it, and it mutates nothing it doesn't own — so it never
+state, only when you run it, and it mutates nothing it doesn't own, so it never
 sees **unmanaged** resources at all.
 
 ## What Cloudkeel-DD detects
@@ -31,7 +31,7 @@ sees **unmanaged** resources at all.
 | **Policy violation** | Drift or a resource that breaks a rule | A container running as root; a public LoadBalancer with no exception |
 
 Each finding carries a **field-level diff** (`old → new`), a severity, and a
-category — not just "something changed."
+category, not just "something changed."
 
 ## Who it's for
 

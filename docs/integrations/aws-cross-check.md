@@ -30,25 +30,23 @@ for the 62 AWS types Cloudkeel-DD field-diffs.
 >
 > The published document used to grant reads for six services. AWS coverage grew
 > to 62 resource types without it growing to match, so an older copy leaves most
-> types reporting *"not verifiable"* — which reads as thin coverage rather than
+> types reporting *"not verifiable"*, which reads as thin coverage rather than
 > the permissions problem it is. Re-attaching is the whole fix; nothing else
 > changes.
-
 
 > [!WARNING]
 > **Re-attach again if you set it up before 2026-08-28**
 >
 > The 2026-08-07 regeneration pulled each type's **read** permissions
-> (`handlers.read.permissions` — used to fetch one resource by id) but missed its
-> **list** permissions (`handlers.list.permissions` — used to enumerate which
+> (`handlers.read.permissions`, used to fetch one resource by id) but missed its
+> **list** permissions (`handlers.list.permissions`, used to enumerate which
 > resources exist), wherever a type's Cloud Control handlers need different
 > underlying actions for the two. Sixteen actions across appsync, athena, backup,
 > cloudfront, CloudTrail, cognito-identity, cognito-idp, dynamodb, ecs,
 > globalaccelerator, guardduty, kafka, lambda, ssm, states and transfer were
-> missing as a result — `lambda:ListFunctions` most visibly, since Lambda had no
+> missing as a result: `lambda:ListFunctions` most visibly, since Lambda had no
 > enumeration permission at all under the previous document. Re-attaching is
 > again the whole fix.
-
 
 Plus `cloudformation:ListResources` and `cloudformation:GetResource` (their own
 statement, `DDetectiveUniversalReader`). Despite the name these have nothing to
@@ -74,12 +72,12 @@ Plus the underlying-service read actions (their own statement,
 layer: `cloudformation:ListResources` lets Cloudkeel-DD *invoke* it, but each
 resource type's handler then calls that service's **own** read API under the
 same credential. Reading 62 types therefore means read actions across ~40
-services — RDS, IAM, KMS, S3, DynamoDB, Lambda, CloudFront, EFS, Redshift,
+services: RDS, IAM, KMS, S3, DynamoDB, Lambda, CloudFront, EFS, Redshift,
 OpenSearch and the rest.
 
 This statement is **generated** from each type's declared permissions in the
 CloudFormation registry (`aws cloudformation describe-type` →
-`handlers.read.permissions` **and** `handlers.list.permissions` — reading one
+`handlers.read.permissions` **and** `handlers.list.permissions`, reading one
 resource by id and enumerating all of them are separate Cloud Control handlers
 and can require different underlying actions), not hand-maintained. That is
 why it grew: the hand-maintained version silently stopped matching coverage.
@@ -97,11 +95,11 @@ why it grew: the hand-maintained version silently stopped matching coverage.
 > |---|---|---|
 > | `aws_lambda_function` | `lambda:GetFunction` | Returns a pre-signed URL to download the function's code |
 > | `aws_lambda_function`, `aws_cognito_user_pool`, `aws_sfn_state_machine` | `kms:Decrypt` | Data-plane: decrypts ciphertext |
-> | `aws_cloudwatch_event_rule` | `iam:PassRole` | Not a read at all — it delegates a role |
+> | `aws_cloudwatch_event_rule` | `iam:PassRole` | Not a read at all; it delegates a role |
 >
 > Those four field-diff on the attributes that *are* readable and report the
 > rest as *"not verifiable"*. Grant the withheld actions yourself if you want
-> full coverage on them and accept the trade — Cloudkeel-DD never asks for them.
+> full coverage on them and accept the trade; Cloudkeel-DD never asks for them.
 > Wildcards in this statement are confined to `Describe*`/`List*`/`Get*` on
 > services with no data-plane reach; S3, KMS, Lambda, SSM, Secrets Manager and
 > Cognito stay enumerated action-by-action for exactly that reason.
@@ -121,7 +119,7 @@ skipped independently:
 
 Either way scanning works exactly the same.
 
-Nothing that writes, and no `Action: "*"` — every wildcard is a read verb
+Nothing that writes, and no `Action: "*"`: every wildcard is a read verb
 (`Describe*`/`List*`/`Get*`) scoped to one service.
 
 > [!WARNING]
@@ -131,7 +129,6 @@ Nothing that writes, and no `Action: "*"` — every wildcard is a read verb
 > inline user policy, so the old `aws iam put-user-policy` command fails with
 > `LimitExceeded`. Managed policies allow 6,144, which this fits with room to
 > grow. Create and attach it instead:
-
 
 ```bash
 POLICY_ARN=$(aws iam create-policy \
@@ -194,8 +191,7 @@ and Terraform's separately-declared blocks don't register as false drift.
 > 62 against 1 is the largest coverage asymmetry in the product. On AWS, connect a
 > state bucket if you can.
 
-
-**Unmanaged-resource detection: full**, across all **64** enumerated AWS types —
+**Unmanaged-resource detection: full**, across all **64** enumerated AWS types,
 not just the ones the plan path cross-checks. Anything in that set running in
 the account with no Terraform tracking is flagged. The
 [coverage page](https://cloudkeel.io/docs/claims/coverage/) lists every enumerated and spec'd type,

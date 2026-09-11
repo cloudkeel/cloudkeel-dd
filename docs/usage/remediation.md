@@ -16,7 +16,7 @@ records a decision or opens a pull request for a human to review.
 |---|---|---|
 | Reality is right, the code is stale | **Accept** | Records the claim; you update your IaC |
 | The code is right, reality is wrong | **Revert plan** | Generates a field-level plan for you to run |
-| Neither — this is noise | **Suppress** | Silences it, with a required reason |
+| Neither: this is noise | **Suppress** | Silences it, with a required reason |
 | You want a PR out of it | **Remediation PR** | Opens a real GitHub PR or GitLab MR |
 
 Accept and revert are decisions. Only the remediation PR produces an artifact.
@@ -49,7 +49,7 @@ Each step is one of three actions:
 | `remove` | Present live, absent from the declared state |
 | `restore` | Present in the declared state, missing live |
 
-It is structured data and suggestion text. **Nothing applies it** — review the
+It is structured data and suggestion text. **Nothing applies it**: review the
 steps, run them yourself, then re-scan to confirm.
 
 ## Opening a remediation PR
@@ -69,11 +69,11 @@ with the last-known-good desired payload as its contents, and a body carrying
 the drift category, severity, diff summary and the full field-level diff.
 
 **This is a record, not a fix.** It is not HCL, and merging it does not
-reconcile anything — it puts the desired state and the diff in front of
+reconcile anything; it puts the desired state and the diff in front of
 reviewers in your normal review workflow. The actual change to your Terraform is
 still yours to write.
 
-### For an unmanaged resource — Codify
+### For an unmanaged resource: Codify
 
 The PR adds a **Terraform `import` block**:
 
@@ -88,7 +88,7 @@ import {
 }
 ```
 
-That is valid HCL, and it is an import block **only** — never a resource body.
+That is valid HCL, and it is an import block **only**: never a resource body.
 Generate the body locally with Terraform 1.5+:
 
 ```bash
@@ -110,14 +110,14 @@ Whether a PR can open immediately depends on the finding's severity:
 | Severity | Initial status | What is needed |
 |---|---|---|
 | `critical` | `pending` | A human must **approve** before a PR can open |
-| everything else | `approved` | Nothing — it is ready to open |
+| everything else | `approved` | Nothing: it is ready to open |
 
 Auto-approval is not auto-opening. **Opening the PR is always a separate,
 explicit action**, at every severity. Nothing reaches your Git host because a
 scan ran.
 
 A remediation moves through `pending` → `approved` → `completed`, or to
-`rejected` if you decline it, or `failed` if the Git host refuses the request —
+`rejected` if you decline it, or `failed` if the Git host refuses the request,
 in which case the error from the host is recorded on the action.
 
 Approving something that is not `pending`, or trying to open a PR for something
@@ -133,7 +133,7 @@ A Personal Access Token must be configured on the Cloudkeel-DD deployment:
 | GitLab | `GITLAB_PAT` |
 
 Without one, PR creation fails with "No GitHub token configured". This is a
-deployment-level setting, not per-tenant — see
+deployment-level setting, not per-tenant. See
 [Secrets](https://cloudkeel.io/docs/configuration/secrets/).
 
 You also supply a **target repository** on the request; it has no default, and
@@ -145,13 +145,12 @@ omitting it is rejected. The target branch defaults to `main`.
 > Every other outbound call is a read. Opening a PR writes to *your* Git host,
 > using *your* token, only when a human asks for it. It never touches your cloud.
 
-
 ## Verification
 
 1. Open a finding and choose **Create remediation PR**.
 2. If it is critical, approve it first.
 3. Follow the returned URL to the PR or MR on your Git host.
-4. Confirm the file path matches the table above — `remediation/…json` for
+4. Confirm the file path matches the table above: `remediation/…json` for
    drift, `codify/…tf` for an unmanaged resource.
 
 ## Troubleshooting
@@ -163,7 +162,7 @@ omitting it is rejected. The target branch defaults to `main`.
 | "target_repo is required" | No repository given on the request | Supply the target repo |
 | "No captured live payload to codify this resource from" | The unmanaged finding has no stored live snapshot | Re-scan so a snapshot is captured, then retry |
 | Codify rejected for this type | No identity mapping for that resource type | Import it manually; Cloudkeel-DD will not guess an import id |
-| PR opened but merging changed nothing | Expected for drift PRs — they add a JSON record, not HCL | Write the Terraform change yourself |
+| PR opened but merging changed nothing | Expected for drift PRs: they add a JSON record, not HCL | Write the Terraform change yourself |
 | Status is `failed` | The Git host refused the request | Read the recorded error; usually token scope or a wrong repo path |
 
 ## Related

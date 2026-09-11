@@ -22,7 +22,7 @@ authoritative list shipped with your version.
 ## Ingress (optional)
 
 The frontend proxies `/api` to the backend itself at runtime, so no Ingress
-controller is required to reach a fully working app — `helm install` then
+controller is required to reach a fully working app: `helm install` then
 `kubectl port-forward svc/<release>-frontend 3000:3000` is enough. Enable
 ingress for a stable, TLS-terminated hostname instead of port-forwarding
 (typical for production).
@@ -49,7 +49,6 @@ ingress for a stable, TLS-terminated hostname instead of port-forwarding
 > credential undecryptable. Keep it in your secret manager and pass the same
 > value on every upgrade.
 
-
 ## Database & cache
 
 | Value | Notes |
@@ -68,18 +67,18 @@ ingress for a stable, TLS-terminated hostname instead of port-forwarding
 ## The pilot timer
 
 From chart `0.3.0` an install scans for a fixed window and then stops *starting*
-new scans. It is a local date comparison against the values below — nothing
+new scans. It is a local date comparison against the values below: nothing
 phones home, there is no licence server, and an air-gapped install behaves
 identically.
 
 | Value | Default | Notes |
 |---|---|---|
 | `config.licenseTrialDays` | `30` | Days from the **first workspace** before the window closes |
-| `config.licenseExpiresAt` | `""` | An explicit UTC date (`2026-12-31` or `2026-12-31T23:59:59Z`). When set it **wins over** `licenseTrialDays` — this is how a window is extended |
+| `config.licenseExpiresAt` | `""` | An explicit UTC date (`2026-12-31` or `2026-12-31T23:59:59Z`). When set it **wins over** `licenseTrialDays`: this is how a window is extended |
 | `config.licenseEnforcementEnabled` | `true` | Set `false` to run the timer in reporting-only mode: state is still computed and shown, nothing is blocked |
 | `secrets.licenseKey` | `""` | A licence key, applied at install/upgrade time. Optional - without one the install runs its pilot window and then the Free allowance. **Wins over** a key entered in Settings. Chart 0.3.4+. See [Licensing](https://cloudkeel.io/docs/configuration/licensing/) |
 
-All three live in the ConfigMap, not the Secret — the expiry is not a secret,
+All three live in the ConfigMap, not the Secret: the expiry is not a secret,
 and storing it as one would imply a protection it does not have.
 
 Changing them is a plain `helm upgrade`. The backend, worker and beat pods carry
@@ -93,15 +92,13 @@ separate restart to remember.
 > history, connected integrations and login all keep working, and a scan already
 > running finishes normally.
 
-
 > [!TIP]
 > **An upgrade cannot cut an existing install short**
 >
-> The window is anchored on **whichever is later** — your first workspace, or the
+> The window is anchored on **whichever is later**: your first workspace, or the
 > first time this install ran a version that enforces the timer. An install that
 > predates enforcement gets a full window from the upgrade, never a retroactive
 > expiry.
-
 
 ## Applying values
 
