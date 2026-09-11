@@ -2,8 +2,8 @@
 
 ## Before opening an issue
 
-1. Check **[the docs](https://cloudkeel.io/docs)** — especially the
-   [FAQ](https://cloudkeel.io/docs/claims/faq) and the getting-started /
+1. Check **[the docs](https://cloudkeel.io/docs/)**, especially the
+   [FAQ](https://cloudkeel.io/docs/claims/faq/) and the getting-started /
    configuration sections.
 2. Confirm which version you're running: `helm list -n ddetective` (chart
    version) and `kubectl get deploy -n ddetective -o wide` (image tags).

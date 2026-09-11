@@ -1,6 +1,6 @@
 # Documentation
 
-This is a **mirror** of [cloudkeel.io/docs](https://cloudkeel.io/docs) for
+This is a **mirror** of [cloudkeel.io/docs](https://cloudkeel.io/docs/) for
 search visibility: the live site is canonical and updates first. Every page
 here links back to its own live version. If something looks stale, trust the
 link, not the page.

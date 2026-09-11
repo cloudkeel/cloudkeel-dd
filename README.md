@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/cloudkeel/cloudkeel-dd/releases"><img alt="Latest release" src="https://img.shields.io/github/v/release/cloudkeel/cloudkeel-dd?label=latest&color=2DD4BF&labelColor=0E1420&style=flat-square"></a>
-  <a href="https://cloudkeel.io/docs"><img alt="Docs" src="https://img.shields.io/badge/docs-cloudkeel.io-2DD4BF?labelColor=0E1420&style=flat-square"></a>
+  <a href="https://cloudkeel.io/docs/"><img alt="Docs" src="https://img.shields.io/badge/docs-cloudkeel.io-2DD4BF?labelColor=0E1420&style=flat-square"></a>
   <img alt="Self-hosted" src="https://img.shields.io/badge/self--hosted-always-2DD4BF?labelColor=0E1420&style=flat-square">
   <img alt="Read-only" src="https://img.shields.io/badge/read--only-always-2DD4BF?labelColor=0E1420&style=flat-square">
 </p>
@@ -51,9 +51,9 @@ helm install dd oci://registry-1.docker.io/driftdetective/d-detective --version 
      and website/src/consts.ts (CHART_VERSION) in the private workspace. -->
 
 Full walkthrough, prerequisites, and what to expect at each step: **[Try
-Cloudkeel-DD →](https://cloudkeel.io/quickstart)**
+Cloudkeel-DD →](https://cloudkeel.io/quickstart/)**
 
-Full documentation: **[cloudkeel.io/docs](https://cloudkeel.io/docs)** — also
+Full documentation: **[cloudkeel.io/docs](https://cloudkeel.io/docs/)**, also
 mirrored in this repo under **[docs/](docs/)** for search visibility. The live
 site updates first; every mirrored page links back to its own canonical
 version.
@@ -84,7 +84,7 @@ hand-written, so it can't drift from what actually installs.
 - Everything else is inventory-level today.
 
 Scans are **point-in-time**, not continuous. Full breakdown, methodology, and
-what's honestly still a gap: **[Coverage →](https://cloudkeel.io/docs/coverage)**
+what's honestly still a gap: **[Coverage →](https://cloudkeel.io/docs/claims/coverage/)**
 
 ## How it runs
 
@@ -100,7 +100,7 @@ what's honestly still a gap: **[Coverage →](https://cloudkeel.io/docs/coverage
 - Runs **unmetered for 30 days**, then converts to a **Free tier** — 1 enabled
   scope, 3 users, every feature, for as long as you want. Findings, history,
   integrations, and login all keep working; nothing is deleted. See
-  **[Pricing →](https://cloudkeel.io/pricing)**.
+  **[Pricing →](https://cloudkeel.io/pricing/)**.
 
 ## Pricing
 
@@ -116,11 +116,11 @@ cluster). No per-resource charges, ever.
 | **Support** | Docs and community | Email, 2-business-day | Priority, named contact |
 
 ¹ Billed annually; $99/scope/mo month-to-month. Team also runs unmetered for
-its first 30 days. Full breakdown and FAQ: **[cloudkeel.io/pricing →](https://cloudkeel.io/pricing)**
+its first 30 days. Full breakdown and FAQ: **[cloudkeel.io/pricing →](https://cloudkeel.io/pricing/)**
 
 ## Need a hand getting set up, not just software?
 
-The **[Drift Audit](https://cloudkeel.io/audit)** is a fixed-price, 5-business-day
+The **[Drift Audit](https://cloudkeel.io/audit/)** is a fixed-price, 5-business-day
 engagement where we help you install and configure Cloudkeel-DD against your
 own accounts — a supervised install, never a vendor-operated audit; we do not
 take custody of your credentials. It's a separate, paid offer from the
@@ -140,5 +140,5 @@ Found a **security vulnerability**? Do not open a public issue — see
 This repository contains documentation, release notes, and issue tracking
 only — no application source. Cloudkeel-DD is proprietary software licensed
 for self-hosted use under the terms accepted at install; see
-[cloudkeel.io/terms](https://cloudkeel.io/terms). All content in this
+[cloudkeel.io/terms](https://cloudkeel.io/terms/). All content in this
 repository is © Cloudkeel Systems unless stated otherwise.

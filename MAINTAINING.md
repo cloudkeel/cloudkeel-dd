@@ -110,7 +110,7 @@ version-notes callout update and the pricing table.
 `docs/` in this repo is a converted copy of
 `ddetective-docs-website/website/src/content/docs/docs/` (private workspace,
 the Starlight source) — for search visibility only. The live site at
-[cloudkeel.io/docs](https://cloudkeel.io/docs) is canonical and always
+[cloudkeel.io/docs](https://cloudkeel.io/docs/) is canonical and always
 updates first. This mirror does **not** auto-refresh; re-run it whenever the
 upstream docs change meaningfully (new pages, a rewritten section, or a
 version bump that changes inline command examples).

@@ -8,7 +8,7 @@ labels: question
 **⚠️ Before you submit: redact any credentials, connection strings, internal
 hostnames, or tokens from anything you paste below.**
 
-Have you checked [the docs](https://cloudkeel.io/docs) already?  yes / no
+Have you checked [the docs](https://cloudkeel.io/docs/) already?  yes / no
 
 ### What are you trying to do?
 
