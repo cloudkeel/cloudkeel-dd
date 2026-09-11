@@ -26,7 +26,7 @@ click - shows up as a field-level diff.
 
 Supported kinds: `Deployment`, `StatefulSet`, `DaemonSet`, `Service`,
 `ConfigMap`, `Ingress`, `NetworkPolicy`, `Job`, `CronJob`, `HorizontalPodAutoscaler`,
-`PersistentVolumeClaim`, `ServiceAccount`.
+`PersistentVolumeClaim`, `ServiceAccount`, `ClusterRole`, `ClusterRoleBinding`.
 **`Secret` is deliberately excluded** so secret values
 never land in a diff.
 
@@ -119,6 +119,11 @@ rules:
   verbs: ["get", "list", "watch"]
 - apiGroups: ["autoscaling"]
   resources: ["horizontalpodautoscalers"]
+  verbs: ["get", "list", "watch"]
+# ClusterRole/ClusterRoleBinding are cluster-scoped, not namespaced - reading
+# them still fits this same ClusterRole object, no binding-shape change.
+- apiGroups: ["rbac.authorization.k8s.io"]
+  resources: ["clusterroles", "clusterrolebindings"]
   verbs: ["get", "list", "watch"]
 # Reads the kube-system namespace UID, which is the permanent per-cluster
 # fingerprint Cloudkeel-DD uses to keep two clusters' identically-named objects
@@ -233,7 +238,7 @@ public LoadBalancer exposure without an exception annotation.
 ## Unmanaged workload detection
 
 Alongside comparing Helm-managed objects, Cloudkeel-DD lists every object of the
-twelve supported kinds and flags the ones no tool claims. This needs no Terraform
+fourteen supported kinds and flags the ones no tool claims. This needs no Terraform
 state source, unlike the cloud connectors, where a state file is what defines
 "managed".
 
