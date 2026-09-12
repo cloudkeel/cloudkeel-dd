@@ -1,6 +1,6 @@
 ---
-title: "Kubernetes / Helm setup"
-description: "Create a read-only ServiceAccount and kubeconfig, then detect Helm release drift and unmanaged workloads with no GitOps tool required."
+title: "Kubernetes / Helm drift detection"
+description: "Detect Kubernetes configuration drift on Helm releases with a read-only ServiceAccount and kubeconfig - no GitOps tool required, catches unmanaged workloads too."
 ---
 
 > Mirrored for search visibility. Canonical, always-current version: **[https://cloudkeel.io/docs/integrations/kubernetes/](https://cloudkeel.io/docs/integrations/kubernetes/)**
@@ -15,7 +15,7 @@ the Kubernetes API, not to a cloud provider.
 Running Argo CD or Flux? Use those integrations instead - they know what git
 declared. This one is for when Helm's own release record is the source of truth.
 
-## How it detects drift
+## How it detects configuration drift
 
 - **Desired state** = Helm's own stored release manifest (what `helm install`
   actually rendered and applied)
